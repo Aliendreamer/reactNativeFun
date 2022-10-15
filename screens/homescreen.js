@@ -1,7 +1,7 @@
 // In App.js in a new project
 
 import React, { useEffect, useContext } from 'react';
-import { View, StyleSheet, TextInput, Text, Pressable, FlatList, Dimensions } from 'react-native';
+import { View, StyleSheet, TextInput, Text, Pressable, FlatList, SafeAreaView } from 'react-native';
 import { UserContext } from '../helpers/usercontext';
 
 
@@ -10,8 +10,11 @@ export const HomeScreen = ({ navigation }) => {
 	useEffect(() => {
 
 	}, []);
-	const data = [...availableUserNames, "test", "test1", "test2"].map((value, index) => {
+	const data = [...availableUserNames, "test", "test1", "test2", "test3", "test4", "test5"].map((value, index) => {
 		return { key: index, name: value }
+	});
+	const dataTwo = [...availableUserNames, 1, 2, 3].map((value, index) => {
+		return { key: index, value: value }
 	});
 	const onChangeText = () => { };
 	return (
@@ -22,33 +25,33 @@ export const HomeScreen = ({ navigation }) => {
 				onChangeText={onChangeText}
 				value={user}
 			/>
-			<View>
-				<FlatList
-					horizontal={true}
-					style={styles.list}
-					initialNumToRender={5}
-					scrollEventThrottle={true}
-					data={data}
-					renderItem={({ item }) => (
-						<View style={styles.item}>
-							<Text style={styles.title}>{item.name}</Text>
-						</View>
-					)}
-					ItemSeparatorComponent={() => {
-						return (
-							<View
-								style={{
-									height: 50,
-									width: 4,
-									backgroundColor: "#CED0CE",
+			<FlatList
+				horizontal={true}
+				style={styles.list}
+				initialNumToRender={3}
+				contentContainerStyle={{ paddingRight: 50 }}
+				showsHorizontalScrollIndicator={false}
+				scrollEventThrottle={true}
+				data={data}
+				renderItem={({ item }) => (
+					<View style={styles.item}>
+						<Text style={styles.title}>{item.name}</Text>
+					</View>
+				)}
+				ItemSeparatorComponent={() => {
+					return (
+						<View
+							style={{
+								height: 50,
+								width: 4,
+								backgroundColor: "#CED0CE",
 
-								}}
-							/>
-						);
-					}}
-					keyExtractor={(item) => item.key}
-				/>
-			</View>
+							}}
+						/>
+					);
+				}}
+				keyExtractor={(item) => item.key}
+			/>
 			<View>
 				<Pressable
 					style={styles.button}
@@ -70,22 +73,26 @@ const styles = StyleSheet.create({
 
 	},
 	title: {
-		fontSize: 25,
+		fontSize: 20,
+		flex: 1,
 		lineHeight: 21,
 		fontWeight: 'bold',
 		letterSpacing: 0.25,
 		color: 'black',
 	},
 	list: {
-		marginLeft: 50,
 		flex: 1,
 		height: 50,
-		width: "100%"
+		alignSelf: "center",
+		width: "50%",
+		maxHeight: 50
 	},
 	item: {
 		padding: 10,
 		backgroundColor: 'red',
-		width: 100,
+		width: 75,
+		maxWidth: 75,
+		maxHeight: 50,
 		height: 50,
 	},
 	input: {
