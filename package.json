@@ -10,10 +10,13 @@
 	},
 	"dependencies": {
 		"@expo/webpack-config": "0.17.0",
+		"@react-native-community/async-storage": "1.12.1",
+		"@react-navigation/native": "6.0.13",
 		"@react-navigation/native-stack": "6.9.1",
 		"expo": "46.0.16",
 		"expo-status-bar": "1.4.0",
 		"install": "0.13.0",
+		"lodash": "4.17.21",
 		"react": "18.0.0",
 		"react-dom": "18.0.0",
 		"react-native": "0.69.6",

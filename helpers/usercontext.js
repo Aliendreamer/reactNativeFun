@@ -31,6 +31,13 @@ const userReducer = (state, action) => {
 				...state,
 				availableUserNames: action.payload
 			}
+		case ReducerActions.SET_LAUNCH_STATE:
+			return {
+				...state,
+				availableUserNames: action.payload.usernames,
+				user: action.payload.user,
+				scores: action.payload.scores
+			}
 		default:
 			return state;
 	}
@@ -46,9 +53,9 @@ const UserProvider = ({ children }) => {
 	const setScore = score => dispatch({ type: ReducerActions.SET_SCORE, payload: score });
 	const setScores = scores => dispatch({ type: ReducerActions.SET_SCORES, payload: scores });
 	const setUserNames = availableUserNames => dispatch({ type: ReducerActions.SET_USER_NAMES, payload: availableUserNames });
-
+	const setLaunchState = state => dispatch({ type: ReducerActions.SET_LAUNCH_STATE, payload: state });
 	return (
-		<UserContext.Provider value={{ state, setUser, setLanguageLevel, setScore, setScores, setUserNames }}>
+		<UserContext.Provider value={{ state, setUser, setLanguageLevel, setScore, setScores, setLaunchState, setUserNames }}>
 			{children}
 		</UserContext.Provider>
 	);

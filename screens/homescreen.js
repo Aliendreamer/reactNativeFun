@@ -1,28 +1,46 @@
 // In App.js in a new project
 
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useCallback, useContext } from 'react';
 import { View, StyleSheet, TextInput, Text, Pressable, FlatList, SafeAreaView } from 'react-native';
 import { UserContext } from '../helpers/usercontext';
-
+import AsyncStorage from '@react-native-community/async-storage';
+import { StorageKeys } from '../helpers/constants';
+import { isEmpty } from "lodash";
 
 export const HomeScreen = ({ navigation }) => {
-	const { state: { availableUserNames, user } } = useContext(UserContext);
+	const { state: { availableUserNames, scores, user }, setUser, setLaunchState } = useContext(UserContext);
 	useEffect(() => {
-
+		(async () => {
+			const user = await AsyncStorage.getItem(StorageKeys.USER);
+			const userScores = await AsyncStorage.getItem(StorageKeys.USERSCORES);
+			const userAvailableNames = await AsyncStorage.getItem(StorageKeys.USERNAMES);
+			const scores = isEmpty(userScores) ? [1, 2, 3] : JSON.parse(userScores);
+			const usernames = isEmpty(userAvailableNames) ? [] : JSON.parse(userAvailableNames);
+			setLaunchState({ user: user ?? "", scores, usernames });
+		})();
 	}, []);
+	const noUser = isEmpty(user);
 	const data = [...availableUserNames, "test", "test1", "test2", "test3", "test4", "test5"].map((value, index) => {
 		return { key: index, name: value }
 	});
-	const dataTwo = [...availableUserNames, 1, 2, 3].map((value, index) => {
-		return { key: index, value: value }
-	});
-	const onChangeText = () => { };
+	const eventHandler = useCallback(async (value) => {
+		await AsyncStorage.setItem(StorageKeys.USER, value);
+		setUser(value);
+	}, []);
 	return (
 		<View style={styles.container}>
-			<Text style={styles.text}>Home Screen</Text>
+			<Text style={styles.text}
+				ellipsizeMode="clip"
+				numberOfLines={5}
+			>
+				Want to test your knowledge?
+				Create or choose a nickname and start playing</Text>
 			<TextInput
 				style={styles.input}
-				onChangeText={onChangeText}
+				autoFocus={true}
+				blurOnSubmit={true}
+				onChangeText={eventHandler}
+				placeholder="enter nickname"
 				value={user}
 			/>
 			<FlatList
@@ -35,15 +53,22 @@ export const HomeScreen = ({ navigation }) => {
 				data={data}
 				renderItem={({ item }) => (
 					<View style={styles.item}>
-						<Text style={styles.title}>{item.name}</Text>
+						<Text style={styles.title} onPress={async (event) => {
+							const userName = event.target.innerText;
+							await AsyncStorage.setItem(StorageKeys.USER, userName);
+							setUser(userName);
+						}} >
+							{item.name}
+						</Text>
 					</View>
-				)}
+				)
+				}
 				ItemSeparatorComponent={() => {
 					return (
 						<View
 							style={{
 								height: 50,
-								width: 4,
+								width: 2,
 								backgroundColor: "#CED0CE",
 
 							}}
@@ -52,13 +77,23 @@ export const HomeScreen = ({ navigation }) => {
 				}}
 				keyExtractor={(item) => item.key}
 			/>
-			<View>
+			< View >
+				{noUser && <Text>button disabled</Text>}
 				<Pressable
-					style={styles.button}
+					style={noUser ? { ...styles.button, backgroundColor: "white" } : styles.button}
+					disabled={noUser}
 					onPress={() => navigation.navigate('Details')}
 				>
 					<Text style={styles.buttonText}>Start playing</Text>
 				</Pressable>
+			</View >
+			<Text>Top Scores</Text>
+			<View>
+				{scores.slice(0, 3).map((score, index) => (
+					<Text key={index}>
+						{score}
+					</Text>
+				))}
 			</View>
 		</View >
 	);
