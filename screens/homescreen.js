@@ -1,7 +1,7 @@
 // In App.js in a new project
 
 import React, { useEffect, useCallback, useContext } from 'react';
-import { View, StyleSheet, TextInput, Text, Pressable, FlatList, SafeAreaView } from 'react-native';
+import { View, StyleSheet, TextInput, Text, Pressable, FlatList } from 'react-native';
 import { UserContext } from '../helpers/usercontext';
 import AsyncStorage from '@react-native-community/async-storage';
 import { StorageKeys } from '../helpers/constants';
