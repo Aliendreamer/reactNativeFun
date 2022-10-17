@@ -44,10 +44,14 @@ export const SwipeList = ({ data }) => {
 				onSwiped={onSwiped}
 				onTapCard={onTapCard}
 				cards={data}
+				jumpToCardIndex={() => { }}
+				swipeBack={() => { }}
 				cardIndex={cardIndex}
 				cardVerticalMargin={80}
 				renderCard={renderCard}
 				onSwipedAll={onSwipedAllCards}
+				verticalSwipe={false}
+				horizontalSwipe={true}
 				showSecondCard={false}
 				overlayLabels={{
 					left: {
