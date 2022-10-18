@@ -1,16 +1,16 @@
 // In App.js in a new project
 
 import React, { useEffect, useCallback, useState, useContext } from 'react';
-import { ActivityIndicator, View, StyleSheet, TextInput, Text, Pressable, FlatList } from 'react-native';
+import { View, StyleSheet, TextInput, Text, Pressable, FlatList } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
 import { UserContext } from '../helpers/usercontext';
 import AsyncStorage from '@react-native-community/async-storage';
 import { StorageKeys } from '../helpers/constants';
 import { isEmpty } from "lodash";
-import { CustomHeader } from "../components/header";
 
 export const HomeScreen = ({ navigation }) => {
 	const { state: { availableUserNames, scores, user }, setUser, setLaunchState } = useContext(UserContext);
-	const [isLoading, setIsLoading] = useState(true);
+	const [appIsReady, setAppIsReady] = useState(false);
 	useEffect(() => {
 		(async () => {
 			const user = await AsyncStorage.getItem(StorageKeys.USER);
@@ -21,7 +21,7 @@ export const HomeScreen = ({ navigation }) => {
 			const usernames = isEmpty(userAvailableNames) ? [] : JSON.parse(userAvailableNames);
 			const isThemeDark = theme === 'true';
 			setLaunchState({ user: user ?? "", scores, usernames, isThemeDark });
-			setIsLoading(false);
+			setAppIsReady(true);
 		})();
 	}, []);
 	const noUser = isEmpty(user);
@@ -32,78 +32,94 @@ export const HomeScreen = ({ navigation }) => {
 		await AsyncStorage.setItem(StorageKeys.USER, value);
 		setUser(value);
 	}, []);
-	return (
-		<>
-			<View style={styles.container}>
-				<ActivityIndicator animating={isLoading} />
-				<Text style={styles.text}
-					ellipsizeMode="clip"
-					numberOfLines={5}
-				>
-					Want to test your knowledge?
-					Create or choose a nickname and start playing</Text>
-				<TextInput
-					style={styles.input}
-					autoFocus={true}
-					blurOnSubmit={true}
-					onChangeText={eventHandler}
-					placeholder="enter nickname"
-					value={user}
-				/>
-				<FlatList
-					horizontal={true}
-					style={styles.list}
-					initialNumToRender={3}
-					contentContainerStyle={{ paddingRight: 50 }}
-					showsHorizontalScrollIndicator={false}
-					scrollEventThrottle={true}
-					data={data}
-					renderItem={({ item }) => (
-						<View style={styles.item}>
-							<Text style={styles.title} onPress={async (event) => {
-								const userName = event.target.innerText;
-								await AsyncStorage.setItem(StorageKeys.USER, userName);
-								setUser(userName);
-							}} >
-								{item.name}
-							</Text>
-						</View>
-					)
-					}
-					ItemSeparatorComponent={() => {
-						return (
-							<View
-								style={{
-									height: 50,
-									width: 2,
-									backgroundColor: "#CED0CE",
 
-								}}
-							/>
-						);
-					}}
-					keyExtractor={(item) => item.key}
-				/>
-				< View >
-					{noUser && <Text>button disabled</Text>}
-					<Pressable
-						style={noUser ? { ...styles.button, backgroundColor: "white" } : styles.button}
-						disabled={noUser}
-						onPress={() => navigation.navigate('Details')}
-					>
-						<Text style={styles.buttonText}>Start playing</Text>
-					</Pressable>
-				</View >
-				<Text>Top Scores</Text>
-				<View>
-					{scores.slice(0, 3).map((score, index) => (
-						<Text key={index}>
-							{score}
+	const onLayoutRootView = useCallback(async () => {
+		if (appIsReady) {
+			// This tells the splash screen to hide immediately! If we call this after
+			// `setAppIsReady`, then we may see a blank screen while the app is
+			// loading its initial state and rendering its first pixels. So instead,
+			// we hide the splash screen once we know the root view has already
+			// performed layout.
+			await SplashScreen.hideAsync();
+		}
+	}, [appIsReady]);
+
+	if (!appIsReady) {
+		return null;
+	}
+
+	return (
+		<View
+			style={styles.container}
+			onLayoutRootView={onLayoutRootView}
+		>
+			<Text style={styles.text}
+				ellipsizeMode="clip"
+				numberOfLines={5}
+			>
+				Want to test your knowledge?
+				Create or choose a nickname and start playing</Text>
+			<TextInput
+				style={styles.input}
+				autoFocus={true}
+				blurOnSubmit={true}
+				onChangeText={eventHandler}
+				placeholder="enter nickname"
+				value={user}
+			/>
+			<FlatList
+				horizontal={true}
+				style={styles.list}
+				initialNumToRender={3}
+				contentContainerStyle={{ paddingRight: 50 }}
+				showsHorizontalScrollIndicator={false}
+				scrollEventThrottle={true}
+				data={data}
+				renderItem={({ item }) => (
+					<View style={styles.item}>
+						<Text style={styles.title} onPress={async (event) => {
+							const userName = event.target.innerText;
+							await AsyncStorage.setItem(StorageKeys.USER, userName);
+							setUser(userName);
+						}} >
+							{item.name}
 						</Text>
-					))}
-				</View>
+					</View>
+				)
+				}
+				ItemSeparatorComponent={() => {
+					return (
+						<View
+							style={{
+								height: 50,
+								width: 2,
+								backgroundColor: "#CED0CE",
+
+							}}
+						/>
+					);
+				}}
+				keyExtractor={(item) => item.key}
+			/>
+			< View >
+				{noUser && <Text>button disabled</Text>}
+				<Pressable
+					style={noUser ? { ...styles.button, backgroundColor: "white" } : styles.button}
+					disabled={noUser}
+					onPress={() => navigation.navigate('Details')}
+				>
+					<Text style={styles.buttonText}>Start playing</Text>
+				</Pressable>
 			</View >
-		</>
+			<Text>Top Scores</Text>
+			<View>
+				{scores.slice(0, 3).map((score, index) => (
+					<Text key={index}>
+						{score}
+					</Text>
+				))}
+			</View>
+		</View >
 	);
 }
 
