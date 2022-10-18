@@ -14,7 +14,7 @@ import { HomeScreen } from './homescreen';
 import { DetailScreen } from './details';
 import { GameScreen } from './gameScreen';
 import { UserContext } from '../helpers/usercontext';
-
+import { CustomHeader } from "../components/header";
 const CombinedDefaultTheme = {
 	...PaperDefaultTheme,
 	...NavigationDefaultTheme,
@@ -40,9 +40,9 @@ export const Root=() =>{
 		<PaperProvider theme={theme}>
 				<NavigationContainer theme={theme}>
 					<Stack.Navigator initialRouteName="Home">
-						<Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}} />
-						<Stack.Screen name="Details" component={DetailScreen} options={{headerShown: false}} />
-						<Stack.Screen name="Game" component={GameScreen} options={{headerShown: false}} />
+						<Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
+						<Stack.Screen name="Details" component={DetailScreen} options={{header: (props) => <CustomHeader {...props} />}} />
+						<Stack.Screen name="Game" component={GameScreen} options={{header: (props) => <CustomHeader {...props} />}} />
 					</Stack.Navigator>
 				</NavigationContainer>
 		</PaperProvider>

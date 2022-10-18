@@ -36,7 +36,8 @@ const userReducer = (state, action) => {
 				...state,
 				availableUserNames: action.payload.usernames,
 				user: action.payload.user,
-				scores: action.payload.scores
+				scores: action.payload.scores,
+				isThemeDark: action.payload.isThemeDark
 			}
 		case ReducerActions.SET_THEME_STATE:
 			return {

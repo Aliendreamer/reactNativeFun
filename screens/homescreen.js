@@ -19,7 +19,7 @@ export const HomeScreen = ({ navigation }) => {
 			const theme = await AsyncStorage.getItem(StorageKeys.APPTHEME);
 			const scores = isEmpty(userScores) ? [1, 2, 3] : JSON.parse(userScores);
 			const usernames = isEmpty(userAvailableNames) ? [] : JSON.parse(userAvailableNames);
-			const isThemeDark = isEmpty(theme) ? true : Boolean(theme);
+			const isThemeDark = theme === 'true';
 			setLaunchState({ user: user ?? "", scores, usernames, isThemeDark });
 			setIsLoading(false);
 		})();
@@ -34,7 +34,6 @@ export const HomeScreen = ({ navigation }) => {
 	}, []);
 	return (
 		<>
-			<CustomHeader title="Home" />
 			<View style={styles.container}>
 				<ActivityIndicator animating={isLoading} />
 				<Text style={styles.text}
