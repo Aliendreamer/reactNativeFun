@@ -24,7 +24,6 @@ export const GameScreen = ({ route }) => {
 				if (results.errors.length) {
 					return;
 				}
-				debugger;
 				const data = results.data.map((result) => {
 					return {
 						id: result[0],

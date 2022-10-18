@@ -1,22 +1,27 @@
 // In App.js in a new project
 
-import React, { useEffect, useCallback, useContext } from 'react';
-import { View, StyleSheet, TextInput, Text, Pressable, FlatList } from 'react-native';
+import React, { useEffect, useCallback, useState, useContext } from 'react';
+import { ActivityIndicator, View, StyleSheet, TextInput, Text, Pressable, FlatList } from 'react-native';
 import { UserContext } from '../helpers/usercontext';
 import AsyncStorage from '@react-native-community/async-storage';
 import { StorageKeys } from '../helpers/constants';
 import { isEmpty } from "lodash";
+import { CustomHeader } from "../components/header";
 
 export const HomeScreen = ({ navigation }) => {
 	const { state: { availableUserNames, scores, user }, setUser, setLaunchState } = useContext(UserContext);
+	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
 		(async () => {
 			const user = await AsyncStorage.getItem(StorageKeys.USER);
 			const userScores = await AsyncStorage.getItem(StorageKeys.USERSCORES);
 			const userAvailableNames = await AsyncStorage.getItem(StorageKeys.USERNAMES);
+			const theme = await AsyncStorage.getItem(StorageKeys.APPTHEME);
 			const scores = isEmpty(userScores) ? [1, 2, 3] : JSON.parse(userScores);
 			const usernames = isEmpty(userAvailableNames) ? [] : JSON.parse(userAvailableNames);
-			setLaunchState({ user: user ?? "", scores, usernames });
+			const isThemeDark = isEmpty(theme) ? true : Boolean(theme);
+			setLaunchState({ user: user ?? "", scores, usernames, isThemeDark });
+			setIsLoading(false);
 		})();
 	}, []);
 	const noUser = isEmpty(user);
@@ -28,74 +33,78 @@ export const HomeScreen = ({ navigation }) => {
 		setUser(value);
 	}, []);
 	return (
-		<View style={styles.container}>
-			<Text style={styles.text}
-				ellipsizeMode="clip"
-				numberOfLines={5}
-			>
-				Want to test your knowledge?
-				Create or choose a nickname and start playing</Text>
-			<TextInput
-				style={styles.input}
-				autoFocus={true}
-				blurOnSubmit={true}
-				onChangeText={eventHandler}
-				placeholder="enter nickname"
-				value={user}
-			/>
-			<FlatList
-				horizontal={true}
-				style={styles.list}
-				initialNumToRender={3}
-				contentContainerStyle={{ paddingRight: 50 }}
-				showsHorizontalScrollIndicator={false}
-				scrollEventThrottle={true}
-				data={data}
-				renderItem={({ item }) => (
-					<View style={styles.item}>
-						<Text style={styles.title} onPress={async (event) => {
-							const userName = event.target.innerText;
-							await AsyncStorage.setItem(StorageKeys.USER, userName);
-							setUser(userName);
-						}} >
-							{item.name}
-						</Text>
-					</View>
-				)
-				}
-				ItemSeparatorComponent={() => {
-					return (
-						<View
-							style={{
-								height: 50,
-								width: 2,
-								backgroundColor: "#CED0CE",
-
-							}}
-						/>
-					);
-				}}
-				keyExtractor={(item) => item.key}
-			/>
-			< View >
-				{noUser && <Text>button disabled</Text>}
-				<Pressable
-					style={noUser ? { ...styles.button, backgroundColor: "white" } : styles.button}
-					disabled={noUser}
-					onPress={() => navigation.navigate('Details')}
+		<>
+			<CustomHeader title="Home" />
+			<View style={styles.container}>
+				<ActivityIndicator animating={isLoading} />
+				<Text style={styles.text}
+					ellipsizeMode="clip"
+					numberOfLines={5}
 				>
-					<Text style={styles.buttonText}>Start playing</Text>
-				</Pressable>
+					Want to test your knowledge?
+					Create or choose a nickname and start playing</Text>
+				<TextInput
+					style={styles.input}
+					autoFocus={true}
+					blurOnSubmit={true}
+					onChangeText={eventHandler}
+					placeholder="enter nickname"
+					value={user}
+				/>
+				<FlatList
+					horizontal={true}
+					style={styles.list}
+					initialNumToRender={3}
+					contentContainerStyle={{ paddingRight: 50 }}
+					showsHorizontalScrollIndicator={false}
+					scrollEventThrottle={true}
+					data={data}
+					renderItem={({ item }) => (
+						<View style={styles.item}>
+							<Text style={styles.title} onPress={async (event) => {
+								const userName = event.target.innerText;
+								await AsyncStorage.setItem(StorageKeys.USER, userName);
+								setUser(userName);
+							}} >
+								{item.name}
+							</Text>
+						</View>
+					)
+					}
+					ItemSeparatorComponent={() => {
+						return (
+							<View
+								style={{
+									height: 50,
+									width: 2,
+									backgroundColor: "#CED0CE",
+
+								}}
+							/>
+						);
+					}}
+					keyExtractor={(item) => item.key}
+				/>
+				< View >
+					{noUser && <Text>button disabled</Text>}
+					<Pressable
+						style={noUser ? { ...styles.button, backgroundColor: "white" } : styles.button}
+						disabled={noUser}
+						onPress={() => navigation.navigate('Details')}
+					>
+						<Text style={styles.buttonText}>Start playing</Text>
+					</Pressable>
+				</View >
+				<Text>Top Scores</Text>
+				<View>
+					{scores.slice(0, 3).map((score, index) => (
+						<Text key={index}>
+							{score}
+						</Text>
+					))}
+				</View>
 			</View >
-			<Text>Top Scores</Text>
-			<View>
-				{scores.slice(0, 3).map((score, index) => (
-					<Text key={index}>
-						{score}
-					</Text>
-				))}
-			</View>
-		</View >
+		</>
 	);
 }
 
