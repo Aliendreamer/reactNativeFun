@@ -15,6 +15,7 @@ import { DetailScreen } from './details';
 import { GameScreen } from './gameScreen';
 import { UserContext } from '../helpers/usercontext';
 import { CustomHeader } from "../components/header";
+import { Routes} from "../helpers/constants";
 const CombinedDefaultTheme = {
 	...PaperDefaultTheme,
 	...NavigationDefaultTheme,
@@ -41,9 +42,9 @@ export const Root=() =>{
 		theme={theme}>
 				<NavigationContainer theme={theme}>
 					<Stack.Navigator initialRouteName="Home">
-						<Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
-						<Stack.Screen name="Details" component={DetailScreen} options={{header: (props) => <CustomHeader {...props} />}} />
-						<Stack.Screen name="Game" component={GameScreen} options={{header: (props) => <CustomHeader {...props} />}} />
+						<Stack.Screen name={Routes.HOME} component={HomeScreen} options={{headerShown: false}}/>
+						<Stack.Screen name={Routes.DETAILS} component={DetailScreen} options={{header: (props) => <CustomHeader {...props} />}} />
+						<Stack.Screen name={Routes.GAME} component={GameScreen} options={{header: (props) => <CustomHeader {...props} />}} />
 					</Stack.Navigator>
 				</NavigationContainer>
 		</PaperProvider>

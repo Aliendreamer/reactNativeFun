@@ -4,12 +4,15 @@ import React, { useEffect, useCallback, useState, useContext } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { UserContext } from '../helpers/usercontext';
+import { LanguageContext } from '../helpers/languagecontext';
 import AsyncStorage from '@react-native-community/async-storage';
-import { StorageKeys } from '../helpers/constants';
+import { Routes, StorageKeys } from '../helpers/constants';
 import { isEmpty } from "lodash";
 import { TextInput, Text, Button, useTheme } from 'react-native-paper';
 export const HomeScreen = ({ navigation }) => {
 	const { state: { availableUserNames, scores, user }, setUser, setLaunchState } = useContext(UserContext);
+	const { setLanguages } = useContext(LanguageContext);
+
 	const [appIsReady, setAppIsReady] = useState(false);
 	const theme = useTheme();
 
@@ -22,6 +25,7 @@ export const HomeScreen = ({ navigation }) => {
 			const scores = isEmpty(userScores) ? [] : JSON.parse(userScores);
 			const usernames = isEmpty(userAvailableNames) ? [] : JSON.parse(userAvailableNames);
 			const isThemeDark = theme === 'true';
+			await setLanguages();
 			setLaunchState({ user: user ?? "", scores, usernames, isThemeDark });
 			setAppIsReady(true);
 		})();
@@ -93,7 +97,7 @@ export const HomeScreen = ({ navigation }) => {
 				icon="door"
 				mode="contained"
 				onPress={async () => {
-					navigation.navigate('Details');
+					navigation.navigate(Routes.DETAILS);
 					await AsyncStorage.setItem(StorageKeys.USER, user);
 					const names = await AsyncStorage.getItem(StorageKeys.USERNAMES);
 					const nameList = isEmpty(names) ? [] : JSON.parse(names);

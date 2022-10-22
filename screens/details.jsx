@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { SafeAreaView, View, StyleSheet } from 'react-native';
 import { Button,Text , Checkbox } from 'react-native-paper';
-import { MaterialCommunityIcons,MaterialIcons  } from '@expo/vector-icons';export const DetailScreen = ({ navigation }) => {
+import { MaterialCommunityIcons,MaterialIcons  } from '@expo/vector-icons';import { Routes } from '../helpers/constants';
+export const DetailScreen = ({ navigation }) => {
 	const [levels, setLevels] = useState([false, false, false, false, false, false]);
 	return (
 		<SafeAreaView style={styles.container}>
@@ -61,7 +62,7 @@ import { MaterialCommunityIcons,MaterialIcons  } from '@expo/vector-icons';expor
 					<Text  style={styles.buttonText}>clear choices</Text>
 				</View>
 				</Button>
-				<Button style={styles.button} compact={true} mode="contained-tonal" onPress={() =>navigation.navigate("game",{levels})}>
+				<Button style={styles.button} compact={true} mode="contained-tonal" onPress={() =>navigation.navigate(Routes.GAME,{levels})}>
 				<View style={styles.buttonView}>
 					<MaterialIcons style={styles.buttonIcon} name="not-started" />
 					<Text  style={styles.buttonText}>start</Text>

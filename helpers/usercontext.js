@@ -9,13 +9,6 @@ const userReducer = (state, action) => {
 				...state,
 				user: action.payload
 			}
-
-		case ReducerActions.SET_LANGUAGE_LEVEL:
-			return {
-				...state,
-				languageLevel: action.payload
-			}
-
 		case ReducerActions.SET_SCORE:
 			return {
 				...state,
@@ -51,18 +44,17 @@ const userReducer = (state, action) => {
 
 
 const UserProvider = ({ children }) => {
-	const initialState = { user: "", languageLevel: null, isThemeDark: true, scores: [], availableUserNames: [] };
+	const initialState = { user: "", isThemeDark: true, scores: [], availableUserNames: [] };
 	const [state, dispatch] = useReducer(userReducer, initialState);
 
 	const setUser = userName => dispatch({ type: ReducerActions.INIT_USER, payload: userName });
-	const setLanguageLevel = language => dispatch({ type: ReducerActions.SET_LANGUAGE_LEVEL, payload: language });
 	const setScore = score => dispatch({ type: ReducerActions.SET_SCORE, payload: score });
 	const setScores = scores => dispatch({ type: ReducerActions.SET_SCORES, payload: scores });
 	const setUserNames = availableUserNames => dispatch({ type: ReducerActions.SET_USER_NAMES, payload: availableUserNames });
 	const setLaunchState = state => dispatch({ type: ReducerActions.SET_LAUNCH_STATE, payload: state });
 	const setThemeState = state => dispatch({ type: ReducerActions.SET_THEME_STATE, payload: state });
 	return (
-		<UserContext.Provider value={{ state, setUser, setLanguageLevel, setScore, setScores, setLaunchState, setUserNames, setThemeState }}>
+		<UserContext.Provider value={{ state, setUser, setScore, setScores, setLaunchState, setUserNames, setThemeState }}>
 			{children}
 		</UserContext.Provider>
 	);
