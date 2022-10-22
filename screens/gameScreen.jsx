@@ -11,7 +11,7 @@ import level5 from "../assets/level5.csv";
 import level6 from "../assets/level6.csv";
 
 export const GameScreen = ({ route }) => {
-	const { params: { level } } = route;
+	const { params: { levels } } = route;
 	const [data, setData] = useState([]);
 
 	useEffect(() => {

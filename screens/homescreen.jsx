@@ -1,23 +1,25 @@
 // In App.js in a new project
 
 import React, { useEffect, useCallback, useState, useContext } from 'react';
-import { View, StyleSheet, TextInput, Text, Pressable, FlatList } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { UserContext } from '../helpers/usercontext';
 import AsyncStorage from '@react-native-community/async-storage';
 import { StorageKeys } from '../helpers/constants';
 import { isEmpty } from "lodash";
-
+import { TextInput, Text, Button, useTheme } from 'react-native-paper';
 export const HomeScreen = ({ navigation }) => {
 	const { state: { availableUserNames, scores, user }, setUser, setLaunchState } = useContext(UserContext);
 	const [appIsReady, setAppIsReady] = useState(false);
+	const theme = useTheme();
+
 	useEffect(() => {
 		(async () => {
 			const user = await AsyncStorage.getItem(StorageKeys.USER);
 			const userScores = await AsyncStorage.getItem(StorageKeys.USERSCORES);
 			const userAvailableNames = await AsyncStorage.getItem(StorageKeys.USERNAMES);
 			const theme = await AsyncStorage.getItem(StorageKeys.APPTHEME);
-			const scores = isEmpty(userScores) ? [1, 2, 3] : JSON.parse(userScores);
+			const scores = isEmpty(userScores) ? [] : JSON.parse(userScores);
 			const usernames = isEmpty(userAvailableNames) ? [] : JSON.parse(userAvailableNames);
 			const isThemeDark = theme === 'true';
 			setLaunchState({ user: user ?? "", scores, usernames, isThemeDark });
@@ -25,21 +27,15 @@ export const HomeScreen = ({ navigation }) => {
 		})();
 	}, []);
 	const noUser = isEmpty(user);
-	const data = [...availableUserNames, "test", "test1", "test2", "test3", "test4", "test5"].map((value, index) => {
+	const data = [...availableUserNames].map((value, index) => {
 		return { key: index, name: value }
 	});
 	const eventHandler = useCallback(async (value) => {
-		await AsyncStorage.setItem(StorageKeys.USER, value);
 		setUser(value);
 	}, []);
 
 	const onLayoutRootView = useCallback(async () => {
 		if (appIsReady) {
-			// This tells the splash screen to hide immediately! If we call this after
-			// `setAppIsReady`, then we may see a blank screen while the app is
-			// loading its initial state and rendering its first pixels. So instead,
-			// we hide the splash screen once we know the root view has already
-			// performed layout.
 			await SplashScreen.hideAsync();
 		}
 	}, [appIsReady]);
@@ -50,69 +46,68 @@ export const HomeScreen = ({ navigation }) => {
 
 	return (
 		<View
-			style={styles.container}
+			style={{ ...styles.container, backgroundColor: theme.background }}
 			onLayoutRootView={onLayoutRootView}
 		>
-			<Text style={styles.text}
-				ellipsizeMode="clip"
-				numberOfLines={5}
-			>
+			<Text numberOfLines={2} variant="headlineMedium" style={styles.title}>
 				Want to test your knowledge?
-				Create or choose a nickname and start playing</Text>
+				{'\n'}
+				Create or choose a nickname
+			</Text>
 			<TextInput
-				style={styles.input}
 				autoFocus={true}
-				blurOnSubmit={true}
-				onChangeText={eventHandler}
+				left={<TextInput.Icon name="account" />}
 				placeholder="enter nickname"
 				value={user}
+				mode={"flat"}
+				label="player name"
+				error={noUser}
+				style={styles.text}
+				onChangeText={eventHandler}
 			/>
+			{data.length !== 0 && <Text Text variant="bodySmall" style={styles.listLabel}>Used nicknames</Text>}
 			<FlatList
 				horizontal={true}
 				style={styles.list}
 				initialNumToRender={3}
 				contentContainerStyle={{ paddingRight: 50 }}
-				showsHorizontalScrollIndicator={false}
+				showsHorizontalScrollIndicator={true}
 				scrollEventThrottle={true}
 				data={data}
+				scrollEnabled={true}
 				renderItem={({ item }) => (
-					<View style={styles.item}>
-						<Text style={styles.title} onPress={async (event) => {
-							const userName = event.target.innerText;
-							await AsyncStorage.setItem(StorageKeys.USER, userName);
-							setUser(userName);
-						}} >
-							{item.name}
-						</Text>
-					</View>
+					<Text style={styles.item} onPress={async (event) => {
+						const userName = event.target.innerText;
+						await AsyncStorage.setItem(StorageKeys.USER, user);
+						setUser(userName);
+					}} >
+						{item.name}
+					</Text>
 				)
 				}
-				ItemSeparatorComponent={() => {
-					return (
-						<View
-							style={{
-								height: 50,
-								width: 2,
-								backgroundColor: "#CED0CE",
-
-							}}
-						/>
-					);
-				}}
 				keyExtractor={(item) => item.key}
 			/>
-			< View >
-				{noUser && <Text>button disabled</Text>}
-				<Pressable
-					style={noUser ? { ...styles.button, backgroundColor: "white" } : styles.button}
-					disabled={noUser}
-					onPress={() => navigation.navigate('Details')}
-				>
-					<Text style={styles.buttonText}>Start playing</Text>
-				</Pressable>
-			</View >
-			<Text>Top Scores</Text>
-			<View>
+			<Button
+				style={styles.button}
+				disabled={noUser}
+				icon="door"
+				mode="contained"
+				onPress={async () => {
+					navigation.navigate('Details');
+					await AsyncStorage.setItem(StorageKeys.USER, user);
+					const names = await AsyncStorage.getItem(StorageKeys.USERNAMES);
+					const nameList = isEmpty(names) ? [] : JSON.parse(names);
+					const shouldAdd = nameList.includes(user);
+					if (shouldAdd) {
+						nameList.push(user);
+						await AsyncStorage.setItem(StorageKeys.USERNAMES, JSON.stringify(nameList));
+					}
+				}}
+			>
+				<Text style={styles.buttonText}>{noUser ? "enter nickname" : "start playing"}</Text>
+			</Button>
+			<View style={styles.score}>
+				{scores.length !== 0 && <Text>Top Scores</Text>}
 				{scores.slice(0, 3).map((score, index) => (
 					<Text key={index}>
 						{score}
@@ -128,55 +123,50 @@ const styles = StyleSheet.create({
 		marginTop: 0,
 		flex: 1
 	},
+	score: {
+		marginTop: 10,
+		alignSelf: "center",
+	},
 	text: {
-
+		marginHorizontal: 30
 	},
 	title: {
-		fontSize: 20,
-		flex: 1,
-		lineHeight: 21,
-		fontWeight: 'bold',
-		letterSpacing: 0.25,
-		color: 'black',
+		marginTop: 80,
+		textAlign: 'center',
+		marginBottom: 20
 	},
 	list: {
-		flex: 1,
 		height: 50,
 		alignSelf: "center",
 		width: "50%",
-		maxHeight: 50
+		maxHeight: 50,
 	},
 	item: {
 		padding: 10,
-		backgroundColor: 'red',
 		width: 75,
 		maxWidth: 75,
 		maxHeight: 50,
 		height: 50,
+		textAlign: "center",
+		numberOfLines: 1
 	},
-	input: {
-		height: 40,
-		margin: 12,
-		borderWidth: 1,
-		padding: 10
+	listLabel: {
+		marginTop: 40,
+		padding: 10,
+		textAlign: "center"
 	},
 	button: {
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingVertical: 15,
-		paddingHorizontal: 30,
-		marginLeft: 50,
-		marginRight: 50,
-		marginTop: 300,
+		marginHorizontal: 30,
+		marginTop: 10,
 		borderRadius: 4,
 		elevation: 3,
-		backgroundColor: 'red',
 	},
 	buttonText: {
 		fontSize: 16,
 		lineHeight: 21,
 		fontWeight: 'bold',
-		letterSpacing: 0.25,
-		color: 'black',
+		letterSpacing: 0.25
 	}
 });

@@ -22,7 +22,6 @@ export const CustomHeader = ({navigation,route}) => {
       <TouchableRipple onPress={() => toggleTheme()}>
         <Switch
           style={[{ backgroundColor: theme.colors.accent }]}
-          color={'red'}
           value={isThemeDark}
         />
       </TouchableRipple>

@@ -37,7 +37,8 @@ export const Root=() =>{
 	const {state:{isThemeDark}}=useContext(UserContext);
 	const theme = isThemeDark ?CombinedDarkTheme:CombinedDefaultTheme;
 	return (
-		<PaperProvider theme={theme}>
+		<PaperProvider
+		theme={theme}>
 				<NavigationContainer theme={theme}>
 					<Stack.Navigator initialRouteName="Home">
 						<Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
