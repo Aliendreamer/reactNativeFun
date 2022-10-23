@@ -47,7 +47,7 @@ const LanguageProvider = ({ children }) => {
 						id: result[0],
 						symbol: result[1],
 						pronounce: result[2],
-						hints: isEmpty(result[3]) ? "" : result[2].split(";")
+						hints: isEmpty(result[3]) ? "" : result[3].split(";")
 					}
 				}).filter(Boolean);
 				return resolve(data);

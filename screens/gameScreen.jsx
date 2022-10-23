@@ -1,5 +1,4 @@
 import React, { useEffect,useContext, useState } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
 import { SwipeList } from "../components/swipeList";
 import { LanguageContext } from '../helpers/languagecontext';
 
@@ -44,21 +43,12 @@ export const GameScreen = ({ route }) => {
 			}
 			index++;
 		}
-		debugger;
-		setData(dataLanguages);
+		const data = dataLanguages.slice(0,4);
+		setData(data);
 		setCombination(combination);
 	}, []);
 	return (
-		<SafeAreaView style={styles.container}>
 			<SwipeList data={data} />
-		</SafeAreaView>
 	);
 }
-const styles = StyleSheet.create({
-	container: {
-		marginTop: 0,
-		flex: 1,
-		width: "100%"
-	},
 
-});

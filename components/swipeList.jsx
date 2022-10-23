@@ -1,107 +1,258 @@
-import React, { useRef } from 'react';
+import React, { useRef,useState } from 'react';
 import Swiper from 'react-native-deck-swiper';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet,SafeAreaView, View } from 'react-native';
+import {Button,HelperText, ProgressBar,Portal,Dialog, MD3Colors,Text } from 'react-native-paper';
+import { AntDesign } from '@expo/vector-icons';
+
 export const SwipeList = ({ data }) => {
 	const swiperRef = useRef();
-	const cardIndex = 0;
-	const cardNum = 0;
-	const swipeDirection = "";
-	const isSwipingBack = false;
+	const knownCards = useRef(0);
+	const unknownCards = useRef(0);
+	const [showHint,setShowHint]=useState(false);
+	const [hint,setHint]=useState(null);
+	const [cardIndex,setCardIndex] = useState(-1);
+	const total = data.length;
+	const [progress,setProgress] =useState(0);
+	const [visible, setVisible] = useState(false);
 	const renderCard = card => {
 		if (!card) {
 			return null;
 		}
 		return (
-			<View style={styles.card}>
-				<Text style={styles.text}>{card.id}</Text>
-				<Text style={styles.paragraph}>{card.symbol}</Text>
+			<View>
+				<Text disabled={true} style={styles.paragraph}>{card.symbol}</Text>
 			</View>
 		);
 	};
 
 	const onSwipedAllCards = () => {
-
+		debugger;
+		setVisible(true);
 	};
 
-	const onSwiped = () => {
-
+	const onSwipedLeft = (index) => {
+		setCardIndex(index);
+		setProgress(Math.abs(index/total).toPrecision(1));
+		setShowHint(false);
+		unknownCards.current++;
 	};
-	const onTapCard = () => {
+
+	const onSwipedRight = (index) => {
+		setCardIndex(index);
+		setProgress(Math.abs(index/total).toPrecision(1));
+		setShowHint(false);
+		knownCards.current++;
 	};
-
-
 
 
 	return (
-		<View style={styles.container} >
+		<SafeAreaView>
+		<Portal>
+			<Dialog visible={visible} onDismiss={()=>setVisible(false)}>
+            <Dialog.Title>Final result</Dialog.Title>
+            <Dialog.Content>
+				<Text>
+					You finished with result:
+					{'\n'}
+					known:{knownCards.current} unknown: {unknownCards.current}
+					total:{(knownCards.current/total)*100}
+				</Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+			<Button onPress={()=>setVisible(false)}>close</Button>
+			<Button onPress={()=>{
+				setVisible(false)
+				}}>save result</Button>
+		</Dialog.Actions>
+			</Dialog>
+        </Portal>
+			<View style={styles.progressBar}>
+				<Text variant="titleMedium">Current cards progress</Text>
+			<ProgressBar progress={progress} color={MD3Colors.error100} />
+			</View>
+			<View style={styles.list}>
 			<Swiper
-				style={styles.swiper}
-				ref={swiper => swiperRef.current = swiper}
+				containerStyle={styles.swiper}
+				ref={ref => swiperRef.current = ref}
 				disableTopSwipe={true}
 				disableBottomSwipe={true}
 				infinite={false}
-				onTapCardDeadZone={5}
-				onSwiped={onSwiped}
-				onTapCard={onTapCard}
+				overlayOpacityHorizontalThreshold={100/6}
+				onSwipedLeft={onSwipedLeft}
+				onSwipedRight={onSwipedRight}
 				cards={data}
-				jumpToCardIndex={() => { }}
-				swipeBack={() => { }}
-				cardIndex={cardIndex}
-				cardVerticalMargin={80}
+				pointerEvents="auto"
+				cardIndex={0}
+				cardStyle={styles.card}
 				renderCard={renderCard}
 				onSwipedAll={onSwipedAllCards}
 				verticalSwipe={false}
 				horizontalSwipe={true}
-				showSecondCard={false}
+				stackSize={2}
+				showSecondCard={true}
 				overlayLabels={{
 					left: {
-						title: 'NOPE',
-						swipeColor: '#FF6C6C',
-						backgroundOpacity: '0.75',
-						fontColor: '#FFF',
+						element: <Text>Unknown</Text> ,
+						title: 'Unknown',
+						style: {
+							label: {
+							backgroundColor: 'black',
+							borderColor: 'black',
+							color: 'white',
+							borderWidth: 1
+						},
+						wrapper: {
+							flexDirection: 'column',
+							alignItems: 'flex-end',
+							justifyContent: 'flex-start',
+							marginTop: 30,
+							marginLeft: -30
+							}
+						}
 					},
 					right: {
-						title: 'LIKE',
-						swipeColor: '#4CCC93',
-						backgroundOpacity: '0.75',
-						fontColor: '#FFF',
-					}
+						element: <Text>Known</Text> ,
+						title: 'Known',
+						style: {
+							label: {
+							backgroundColor: 'black',
+							borderColor: 'black',
+							color: 'white',
+							borderWidth: 1
+						},
+						wrapper: {
+							flexDirection: 'column',
+							alignItems: 'flex-start',
+							justifyContent: 'flex-start',
+							marginTop: 30,
+							marginLeft: 30
+							}
+						}
+					},
 				}}
 				animateOverlayLabelsOpacity
 				animateCardOpacity
 			/>
-		</View >
+			</View>
+			<View style={styles.buttonBarHelp}>
+				<HelperText type="error" visible={showHint}>
+					{hint}
+				</HelperText>
+			</View>
+			<View style={styles.buttonBar}>
+				<Button style={styles.button} compact={true} mode="contained-tonal" onPress={() =>{
+					swiperRef.current.swipeBack();
+					setProgress(Math.abs((cardIndex)/total).toPrecision(1));
+					const index= cardIndex-1;
+					setCardIndex(index);
+					setVisible(index===total-1);
+					showHint(false);
+				}}>
+					<View style={styles.buttonView}>
+						<AntDesign name="stepbackward" style={styles.buttonIcon} />
+						<Text  style={styles.buttonText}>retry last</Text>
+					</View>
+				</Button>
+				<Button style={styles.button} compact={true} mode="contained-tonal" onPress={() => {
+						const index= cardIndex+1;
+						setCardIndex(index);
+						setProgress(Math.abs(index/total).toPrecision(1));
+						swiperRef.current.swipeLeft();
+						setShowHint(false);
+					}}>
+					<View style={styles.buttonView}>
+						<AntDesign name="closecircle" style={styles.buttonIcon} />
+						<Text  style={styles.buttonText}>unknown</Text>
+					</View>
+				</Button>
+				<Button style={styles.button} compact={true} mode="contained-tonal" onPress={() =>{
+					const card =data[cardIndex];
+					const hint = card.hints.join(",");
+					setHint(hint);
+					setShowHint(true);
+				}}>
+					<View style={styles.buttonView}>
+						<AntDesign name="questioncircle" style={styles.buttonIcon}/>
+						<Text  style={styles.buttonText}>hint</Text>
+					</View>
+				</Button>
+				<Button style={styles.button} compact={true} mode="contained-tonal" onPress={() =>{
+					const index= cardIndex+1;
+					setCardIndex(index);
+					setProgress(Math.abs(index/total).toPrecision(1));
+					setShowHint(false);
+					swiperRef.current.swipeRight();
+				}}>
+					<View style={styles.buttonView}>
+						<AntDesign name="checkcircle" style={styles.buttonIcon} />
+						<Text  style={styles.buttonText}>known</Text>
+					</View>
+				</Button>
+			</View>
+		</SafeAreaView>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: {
-		marginTop: 0,
-		flex: 1,
-		backgroundColor: '#F5FCFF',
+	list:{
+		paddingTop: 10,
+		height:500,
+		maxHeight:500,
+		justifyContent:"center"
 	},
 	swiper: {
-		paddingTop: 0,
+		paddingTop: 10,
+		marginHorizontal:"15%",
+		justifyContent:"center"
 	},
 	card: {
-		flex: 1,
+		top: 0,
+		left: 0,
+		bottom: 0,
+		right: 0,
+		width: "auto",
+		height: "auto",
 		borderRadius: 4,
 		borderWidth: 2,
 		borderColor: '#E8E8E8',
 		justifyContent: 'center',
 		backgroundColor: 'white',
 	},
-
-	text: {
-		textAlign: 'center',
-		fontSize: 50,
-		backgroundColor: 'transparent',
+	progressBar:{
+		margin:10
 	},
 	paragraph: {
-		margin: 24,
-		fontSize: 18,
+		margin: 5,
+		fontSize: 200,
 		charset: "utf-8",
-		fontWeight: 'bold',
+		fontWeight: 900,
 		textAlign: 'center',
+	},
+	buttonIcon:{
+		fontSize:20
+	},
+	buttonView:{
+		flex:1,
+		flexDirection:"row",
+		justifyContent:"center",
+		alignItems:"center"
+	},
+	buttonText:{
+		fontSize: 20,
+		fontWeight: "normal"
+	},
+	button:{
+		margin:10
+	},
+	buttonBar:{
+		flex:1,
+		flexDirection:"row",
+		marginHorizontal:"25%",
+		justifyContent:"space-evenly"
+	},
+	buttonBarHelp:{
+		margin:5,
+		marginHorizontal:"25%",
+		justifyContent:"center"
 	}
 });

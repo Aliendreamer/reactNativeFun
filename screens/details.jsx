@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { SafeAreaView, View, StyleSheet } from 'react-native';
 import { Button,Text , Checkbox } from 'react-native-paper';
-import { MaterialCommunityIcons,MaterialIcons  } from '@expo/vector-icons';import { Routes } from '../helpers/constants';
+import { MaterialCommunityIcons,MaterialIcons  } from '@expo/vector-icons';
+import { Routes } from '../helpers/constants';
 export const DetailScreen = ({ navigation }) => {
 	const [levels, setLevels] = useState([false, false, false, false, false, false]);
 	return (
