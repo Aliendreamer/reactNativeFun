@@ -112,9 +112,9 @@ export const HomeScreen = ({ navigation }) => {
 			</Button>
 			<View style={styles.score}>
 				{scores.length !== 0 && <Text>Top Scores</Text>}
-				{scores.slice(0, 3).map((score, index) => (
+				{scores.slice(0, 3).map((userScore, index) => (
 					<Text key={index}>
-						{score}
+						{userScore.score}
 					</Text>
 				))}
 			</View>

@@ -2,7 +2,7 @@ import React, { useEffect,useContext, useState } from 'react';
 import { SwipeList } from "../components/swipeList";
 import { LanguageContext } from '../helpers/languagecontext';
 
-export const GameScreen = ({ route }) => {
+export const GameScreen = ({ route,navigation }) => {
 	const { params: { levels } } = route;
 	const [data, setData] = useState([]);
 	const { state:{levelOne, levelTwo,levelThree, levelFour,levelFive, levelSix},setCombination } = useContext(LanguageContext);

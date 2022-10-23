@@ -1,48 +1,43 @@
-import React, { useRef,useState } from 'react';
+import React, { useRef,useState,useCallback, useContext } from 'react';
 import Swiper from 'react-native-deck-swiper';
 import { StyleSheet,SafeAreaView, View } from 'react-native';
 import {Button,HelperText, ProgressBar,Portal,Dialog, MD3Colors,Text } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
+import { isEmpty } from "lodash";
+import { Routes } from '../helpers/constants';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage';
+import {StorageKeys} from "../helpers/constants";
+import { UserContext } from '../helpers/usercontext';
+import { LanguageContext } from '../helpers/languagecontext';
 
 export const SwipeList = ({ data }) => {
 	const swiperRef = useRef();
-	const knownCards = useRef(0);
-	const unknownCards = useRef(0);
+	const {state:{user},setScores}=useContext(UserContext);
+	const {state:{currentCombination}}= useContext(LanguageContext);
+	const [knownCards,setKnownCards] = useState(0);
+	const [unknownCards,setUnknownCards] = useState(0);
 	const [showHint,setShowHint]=useState(false);
 	const [hint,setHint]=useState(null);
 	const [cardIndex,setCardIndex] = useState(-1);
-	const total = data.length;
+	const total = isEmpty(data) ? 0 : data.length-1;
 	const [progress,setProgress] =useState(0);
 	const [visible, setVisible] = useState(false);
-	const renderCard = card => {
-		if (!card) {
-			return null;
-		}
-		return (
-			<View>
-				<Text disabled={true} style={styles.paragraph}>{card.symbol}</Text>
-			</View>
-		);
-	};
+	const navigation = useNavigation();
 
-	const onSwipedAllCards = () => {
-		debugger;
-		setVisible(true);
-	};
-
-	const onSwipedLeft = (index) => {
+	const onSwipedLeft = useCallback((index) => {
 		setCardIndex(index);
 		setProgress(Math.abs(index/total).toPrecision(1));
-		setShowHint(false);
-		unknownCards.current++;
-	};
+		setUnknownCards(unknownCards+1);
+		setVisible(total === index);
+	},[total,unknownCards]);
 
-	const onSwipedRight = (index) => {
+	const onSwipedRight = useCallback((index) => {
 		setCardIndex(index);
 		setProgress(Math.abs(index/total).toPrecision(1));
-		setShowHint(false);
-		knownCards.current++;
-	};
+		setKnownCards(knownCards+1);
+		setVisible(total === index);
+	},[total,knownCards]);
 
 
 	return (
@@ -54,14 +49,19 @@ export const SwipeList = ({ data }) => {
 				<Text>
 					You finished with result:
 					{'\n'}
-					known:{knownCards.current} unknown: {unknownCards.current}
-					total:{(knownCards.current/total)*100}
+					known:{knownCards} unknown: {unknownCards}
+					total:{((knownCards/total)*100).toPrecision(2)}
 				</Text>
             </Dialog.Content>
             <Dialog.Actions>
-			<Button onPress={()=>setVisible(false)}>close</Button>
-			<Button onPress={()=>{
-				setVisible(false)
+			<Button onPress={()=> navigation.navigate(Routes.DETAILS)}>close</Button>
+			<Button onPress={async()=>{
+					const scores = AsyncStorage.getItem(StorageKeys.USERSCORES);
+					const userScores = isEmpty(scores)?[]: JSON.parse(scores);
+					userScores.push({user,levels:currentCombination,score:((knownCards/total)*100).toPrecision(2)});
+					setScores(userScores);
+					AsyncStorage.setItem(StorageKeys,JSON.stringify(userScores));
+					navigation.navigate(Routes.DETAILS);
 				}}>save result</Button>
 		</Dialog.Actions>
 			</Dialog>
@@ -81,14 +81,24 @@ export const SwipeList = ({ data }) => {
 				onSwipedLeft={onSwipedLeft}
 				onSwipedRight={onSwipedRight}
 				cards={data}
-				pointerEvents="auto"
 				cardIndex={0}
+				pointerEvents="auto"
+				// cardIndex={cardIndex}
 				cardStyle={styles.card}
-				renderCard={renderCard}
-				onSwipedAll={onSwipedAllCards}
+				renderCard={card => {
+					if (!card) {
+						return null;
+					}
+					return (
+						<View>
+							<Text disabled={true} style={styles.paragraph}>{card.symbol}</Text>
+						</View>
+					);
+				}}
 				verticalSwipe={false}
+				swipeBackCard={true}
 				horizontalSwipe={true}
-				stackSize={2}
+				stackSize={1}
 				showSecondCard={true}
 				overlayLabels={{
 					left: {
@@ -145,8 +155,7 @@ export const SwipeList = ({ data }) => {
 					setProgress(Math.abs((cardIndex)/total).toPrecision(1));
 					const index= cardIndex-1;
 					setCardIndex(index);
-					setVisible(index===total-1);
-					showHint(false);
+					setVisible(total === index);
 				}}>
 					<View style={styles.buttonView}>
 						<AntDesign name="stepbackward" style={styles.buttonIcon} />
@@ -154,11 +163,11 @@ export const SwipeList = ({ data }) => {
 					</View>
 				</Button>
 				<Button style={styles.button} compact={true} mode="contained-tonal" onPress={() => {
+						swiperRef.current.swipeLeft();
 						const index= cardIndex+1;
 						setCardIndex(index);
+						setVisible(total === index);
 						setProgress(Math.abs(index/total).toPrecision(1));
-						swiperRef.current.swipeLeft();
-						setShowHint(false);
 					}}>
 					<View style={styles.buttonView}>
 						<AntDesign name="closecircle" style={styles.buttonIcon} />
@@ -166,10 +175,13 @@ export const SwipeList = ({ data }) => {
 					</View>
 				</Button>
 				<Button style={styles.button} compact={true} mode="contained-tonal" onPress={() =>{
-					const card =data[cardIndex];
+					const card =data[cardIndex<0?0:cardIndex];
 					const hint = card.hints.join(",");
 					setHint(hint);
 					setShowHint(true);
+					setTimeout(()=>{
+						setShowHint(false);
+					},2000)
 				}}>
 					<View style={styles.buttonView}>
 						<AntDesign name="questioncircle" style={styles.buttonIcon}/>
@@ -177,11 +189,11 @@ export const SwipeList = ({ data }) => {
 					</View>
 				</Button>
 				<Button style={styles.button} compact={true} mode="contained-tonal" onPress={() =>{
+					swiperRef.current.swipeRight();
 					const index= cardIndex+1;
 					setCardIndex(index);
 					setProgress(Math.abs(index/total).toPrecision(1));
-					setShowHint(false);
-					swiperRef.current.swipeRight();
+					setVisible(total === index);
 				}}>
 					<View style={styles.buttonView}>
 						<AntDesign name="checkcircle" style={styles.buttonIcon} />
