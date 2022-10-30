@@ -1,0 +1,21 @@
+When in main menu /choosing the levels:
+1. Remove the "details" text -> done
+2. Add description (mode) next to the slider in top left corner -> what does it mean?
+3. Change "level" to "HSK" -> done
+4. Remove "Clear choices". Create a small button on top of the options to clear the choices -> done
+5. Add Known, Unknown and All buttons for every level to show the Known /Unknown /All words from this level. -> done same as 6
+6. Add "Play Known", "Play Unknown" and "Play All" buttons to show the words from the chosen list and the level that you chose.
+7. Make sure to work in iOS and Android -> done by default
+
+When in play:
+1. Add "Return to levels" button to manage the levels when playing -> done
+2. Add green tick from right of the cards for adding to Known list
+3. Add red tick from left of the cards for adding to Unknown list
+4. Add button for Pinyin
+5. Change Hint to Translate
+6. Should add indicator for known and unknown words similar to the "Current cards progress", but from left to write the number of the
+unknown words and mark it with red, and from the right should also have number of known words and be in green. Should be counted for
+every level/ levels that were picked for learning.
+
+Additional:
+1. Should be able to create a new list with custom words
