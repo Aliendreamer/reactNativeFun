@@ -15,7 +15,7 @@ When in play:
 5. Change Hint to Translate -> done
 6. Should add indicator for known and unknown words similar to the "Current cards progress", but from left to write the number of the
 unknown words and mark it with red, and from the right should also have number of known words and be in green. Should be counted for
-every level/ levels that were picked for learning.
+every level/ levels that were picked for learning. -> done
 
 Additional:
 1. Should be able to create a new list with custom words
