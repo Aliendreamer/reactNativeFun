@@ -2,7 +2,7 @@ import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { isEmpty } from 'lodash';
-import React, { useRef, useState, useCallback, useContext } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 import { StyleSheet, SafeAreaView, View } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import {
@@ -13,9 +13,10 @@ import {
     Dialog,
     MD3Colors,
     Text,
+    Divider,
 } from 'react-native-paper';
 
-import { Routes, StorageKeys } from '../helpers/constants';
+import { Routes, StorageKeys, SwipeDirection } from '../helpers/constants';
 import { LanguageContext } from '../helpers/languagecontext';
 import { UserContext } from '../helpers/usercontext';
 
@@ -32,31 +33,30 @@ export function SwipeList({ data }) {
     const [unknownCards, setUnknownCards] = useState(0);
     const [showHint, setShowHint] = useState(false);
     const [hint, setHint] = useState(null);
+    const [pronounce, setPronounce] = useState(null);
+    const [showPronounce, setShowPronounce] = useState(null);
     const [cardIndex, setCardIndex] = useState(-1);
     const total = isEmpty(data) ? 0 : data.length - 1;
     const [progress, setProgress] = useState(0);
     const [visible, setVisible] = useState(false);
     const navigation = useNavigation();
+    const lastDirection = useRef(SwipeDirection.RIGHT);
 
-    const onSwipedLeft = useCallback(
-        index => {
-            setCardIndex(index);
-            setProgress(Math.abs(index / total).toPrecision(1));
-            setUnknownCards(unknownCards + 1);
-            setVisible(total === index);
-        },
-        [total, unknownCards],
-    );
+    const onSwipedLeft = index => {
+        setCardIndex(index);
+        setProgress(Math.abs(index / total).toPrecision(1));
+        setUnknownCards(unknownCards + 1);
+        setVisible(total === index);
+        lastDirection.current = SwipeDirection.LEFT;
+    };
 
-    const onSwipedRight = useCallback(
-        index => {
-            setCardIndex(index);
-            setProgress(Math.abs(index / total).toPrecision(1));
-            setKnownCards(knownCards + 1);
-            setVisible(total === index);
-        },
-        [total, knownCards],
-    );
+    const onSwipedRight = index => {
+        setCardIndex(index);
+        setProgress(Math.abs(index / total).toPrecision(1));
+        setKnownCards(knownCards + 1);
+        setVisible(total === index);
+        lastDirection.current = SwipeDirection.RIGHT;
+    };
 
     return (
         <SafeAreaView>
@@ -109,6 +109,14 @@ export function SwipeList({ data }) {
             <View style={styles.progressBar}>
                 <Text variant="titleMedium">Current cards progress</Text>
                 <ProgressBar progress={progress} color={MD3Colors.error100} />
+            </View>
+            <View style={styles.textBar}>
+                <Text style={styles.textUnknown} variant="titleLarge">
+                    unknown: {unknownCards}
+                </Text>
+                <Text style={styles.textKnown} variant="titleLarge">
+                    known: {knownCards}
+                </Text>
             </View>
             <View style={styles.list}>
                 <Swiper
@@ -188,8 +196,20 @@ export function SwipeList({ data }) {
                 />
             </View>
             <View style={styles.buttonBarHelp}>
-                <HelperText type="error" visible={showHint}>
+                <HelperText
+                    type="error"
+                    visible={showHint}
+                    style={{ textAlign: 'center' }}
+                >
                     {hint}
+                </HelperText>
+                {showHint && showPronounce && <Divider />}
+                <HelperText
+                    style={{ textAlign: 'center' }}
+                    type="info"
+                    visible={showPronounce}
+                >
+                    {pronounce}
                 </HelperText>
             </View>
             <View style={styles.buttonBar}>
@@ -199,10 +219,13 @@ export function SwipeList({ data }) {
                     mode="contained-tonal"
                     onPress={() => {
                         swiperRef.current.swipeBack();
-                        setProgress(Math.abs(cardIndex / total).toPrecision(1));
                         const index = cardIndex - 1;
+                        setProgress(Math.abs(index / total).toPrecision(1));
                         setCardIndex(index);
                         setVisible(total === index);
+                        lastDirection.current === SwipeDirection.RIGHT
+                            ? setKnownCards(knownCards - 1)
+                            : setUnknownCards(unknownCards - 1);
                     }}
                 >
                     <View style={styles.buttonView}>
@@ -252,7 +275,29 @@ export function SwipeList({ data }) {
                             name="questioncircle"
                             style={styles.buttonIcon}
                         />
-                        <Text style={styles.buttonText}>hint</Text>
+                        <Text style={styles.buttonText}>translate</Text>
+                    </View>
+                </Button>
+                <Button
+                    style={styles.button}
+                    compact
+                    mode="contained-tonal"
+                    onPress={() => {
+                        const card = data[cardIndex + 1];
+                        const { pronounce } = card;
+                        setPronounce(pronounce);
+                        setShowPronounce(true);
+                        setTimeout(() => {
+                            setShowPronounce(false);
+                        }, 2000);
+                    }}
+                >
+                    <View style={styles.buttonView}>
+                        <AntDesign
+                            name="questioncircle"
+                            style={styles.buttonIcon}
+                        />
+                        <Text style={styles.buttonText}>pinyin</Text>
                     </View>
                 </Button>
                 <Button
@@ -308,6 +353,22 @@ const styles = StyleSheet.create({
     progressBar: {
         margin: 10,
     },
+    textBar: {
+        margin: 10,
+        flexDirection: 'row',
+    },
+    textKnown: {
+        marginLeft: '80%',
+        maxWidth: 150,
+        width: 150,
+        color: 'green',
+    },
+    textUnknown: {
+        maxWidth: 150,
+        marginStart: 10,
+        width: 150,
+        color: 'red',
+    },
     paragraph: {
         margin: 5,
         fontSize: 200,
@@ -317,6 +378,7 @@ const styles = StyleSheet.create({
     },
     buttonIcon: {
         fontSize: 20,
+        marginHorizontal: 5,
     },
     buttonView: {
         flex: 1,

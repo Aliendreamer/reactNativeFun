@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import { isEmpty } from 'lodash';
 import Papa from 'papaparse';
 import React, { useCallback, useMemo, useReducer } from 'react';
@@ -8,7 +9,7 @@ import level3 from '../assets/level3.csv';
 import level4 from '../assets/level4.csv';
 import level5 from '../assets/level5.csv';
 import level6 from '../assets/level6.csv';
-import { PlayOptions, ReducerActions } from './constants';
+import { PlayOptions, ReducerActions, StorageKeys } from './constants';
 
 const LanguageContext = React.createContext();
 const languageReducer = (state, action) => {
@@ -43,6 +44,8 @@ function LanguageProvider({ children }) {
         levelSix: [],
         currentCombination: [],
         languageOptions: PlayOptions.PlayAll,
+        previouslyKnown: [],
+        previouslyUnknown: [],
     };
     const [state, dispatch] = useReducer(languageReducer, initialState);
     const toJson = file =>
@@ -82,6 +85,10 @@ function LanguageProvider({ children }) {
         const levelFour = await toJson(level4);
         const levelFive = await toJson(level5);
         const levelSix = await toJson(level6);
+        const uknown = await AsyncStorage.getItem(StorageKeys.UnknownSymbols);
+        const known = await AsyncStorage.getItem(StorageKeys.KnownSymbols);
+        const unknownArray = isEmpty(uknown) ? [] : JSON.parse(uknown);
+        const knownArray = isEmpty(known) ? [] : JSON.parse(known);
         const seen = levelOne.filter(Boolean).reduce((acc, level) => {
             if (!isEmpty(level.symbol) && !acc[level.symbol]) {
                 acc[level.symbol] = true;
@@ -133,6 +140,8 @@ function LanguageProvider({ children }) {
             levelSix: cleanedLevelSix,
             currentCombination: [],
             languageOptions: PlayOptions.PlayAll,
+            previouslyKnown: knownArray,
+            previouslyUnknown: unknownArray,
         };
         dispatch({ type: ReducerActions.INIT_LANGUAGES, payload: state });
     }, []);

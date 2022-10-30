@@ -15,6 +15,8 @@ export const StorageKeys = Object.freeze({
     USERNAMES: 'userNames',
     USERSCORES: 'userScores',
     APPTHEME: 'appTheme',
+    KnownSymbols: 'known_symbols',
+    UnknownSymbols: 'unknown_symbols',
 });
 
 export const Routes = Object.freeze({
@@ -26,4 +28,9 @@ export const PlayOptions = Object.freeze({
     PlayAll: 'Play All',
     PlayUnknown: 'Play Unknown',
     PlayKnown: 'Play Known',
+});
+
+export const SwipeDirection = Object.freeze({
+    RIGHT: 'right',
+    LEFT: 'left',
 });

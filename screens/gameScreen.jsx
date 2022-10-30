@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
-
+import { PlayOptions } from '../helpers/constants';
 import { SwipeList } from '../components/swipeList';
 import { LanguageContext } from '../helpers/languagecontext';
 
@@ -16,6 +16,9 @@ export function GameScreen({ route }) {
             levelFour,
             levelFive,
             levelSix,
+            languageOptions,
+            previouslyKnown,
+            previouslyUnknown,
         },
         setCombination,
     } = useContext(LanguageContext);
@@ -56,6 +59,22 @@ export function GameScreen({ route }) {
             }
             index += 1;
         }
+        switch (languageOptions) {
+            case PlayOptions.PlayKnown:
+                dataLanguages = dataLanguages.filter(word =>
+                    previouslyKnown.some(known => known === word.symbol),
+                );
+                break;
+            case PlayOptions.PlayUnknown:
+                dataLanguages = dataLanguages.filter(word =>
+                    previouslyUnknown.some(known => known === word.symbol),
+                );
+                break;
+            case PlayOptions.PlayAll:
+            default:
+                break;
+        }
+
         setData(dataLanguages);
         setCombination(combination);
         // eslint-disable-next-line react-hooks/exhaustive-deps

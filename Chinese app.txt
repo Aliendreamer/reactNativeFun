@@ -11,8 +11,8 @@ When in play:
 1. Add "Return to levels" button to manage the levels when playing -> done
 2. Add green tick from right of the cards for adding to Known list
 3. Add red tick from left of the cards for adding to Unknown list
-4. Add button for Pinyin
-5. Change Hint to Translate
+4. Add button for Pinyin -> done
+5. Change Hint to Translate -> done
 6. Should add indicator for known and unknown words similar to the "Current cards progress", but from left to write the number of the
 unknown words and mark it with red, and from the right should also have number of known words and be in green. Should be counted for
 every level/ levels that were picked for learning.
