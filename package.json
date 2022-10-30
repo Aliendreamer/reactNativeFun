@@ -8,7 +8,7 @@
 		"ios": "expo start --ios",
 		"web": "expo start --web",
 		"lint": "npx eslint . --ext .js --ext .jsx --fix",
-		"prepare": "husky install"
+		"init:config":"npx mrm lint-staged"
 	},
 	"dependencies": {
 		"@expo/vector-icons": "13.0.0",
