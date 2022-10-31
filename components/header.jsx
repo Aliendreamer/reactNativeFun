@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { useTheme, Appbar, TouchableRipple, Switch } from 'react-native-paper';
 
 import { StorageKeys } from '../helpers/constants';
-import { UserContext } from '../helpers/usercontext';
+import { UserContext } from '../contexts/usercontext';
 
 export function CustomHeader({ navigation, back }) {
     const theme = useTheme();

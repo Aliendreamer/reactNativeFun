@@ -14,8 +14,8 @@ import { View, StyleSheet, FlatList } from 'react-native';
 import { TextInput, Text, Button, useTheme } from 'react-native-paper';
 
 import { Routes, StorageKeys } from '../helpers/constants';
-import { LanguageContext } from '../helpers/languagecontext';
-import { UserContext } from '../helpers/usercontext';
+import { LanguageContext } from '../contexts/languagecontext';
+import { UserContext } from '../contexts/usercontext';
 
 export function HomeScreen({ navigation }) {
     const {

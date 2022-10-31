@@ -17,9 +17,9 @@ import {
 } from 'react-native-paper';
 
 import { Routes, StorageKeys, SwipeDirection } from '../helpers/constants';
-import { LanguageContext } from '../helpers/languagecontext';
+import { LanguageContext } from '../contexts/languagecontext';
 import { getLanguageListsFromStorage } from '../helpers/reusable';
-import { UserContext } from '../helpers/usercontext';
+import { UserContext } from '../contexts/usercontext';
 
 export function SwipeList({ data }) {
     const swiperRef = useRef();

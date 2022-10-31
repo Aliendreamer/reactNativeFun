@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { PlayOptions } from '../helpers/constants';
 import { SwipeList } from '../components/swipeList';
-import { LanguageContext } from '../helpers/languagecontext';
+import { LanguageContext } from '../contexts/languagecontext';
 
 export function GameScreen({ route }) {
     const {

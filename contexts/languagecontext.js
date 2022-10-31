@@ -8,8 +8,8 @@ import level3 from '../assets/level3.csv';
 import level4 from '../assets/level4.csv';
 import level5 from '../assets/level5.csv';
 import level6 from '../assets/level6.csv';
-import { PlayOptions, ReducerActions } from './constants';
-import { getLanguageListsFromStorage } from './reusable';
+import { PlayOptions, ReducerActions } from '../helpers/constants';
+import { getLanguageListsFromStorage } from '../helpers/reusable';
 
 const LanguageContext = React.createContext();
 const languageReducer = (state, action) => {

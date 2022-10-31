@@ -1,6 +1,6 @@
 import React, { useMemo, useReducer } from 'react';
 
-import { ReducerActions } from './constants';
+import { ReducerActions } from '../helpers/constants';
 
 const UserContext = React.createContext();
 
