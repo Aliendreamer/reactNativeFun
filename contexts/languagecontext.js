@@ -9,7 +9,10 @@ import level4 from '../assets/level4.csv';
 import level5 from '../assets/level5.csv';
 import level6 from '../assets/level6.csv';
 import { PlayOptions, ReducerActions } from '../helpers/constants';
-import { getLanguageListsFromStorage } from '../helpers/reusable';
+import {
+    filterUniqueSymbols,
+    getLanguageListsFromStorage,
+} from '../helpers/reusable';
 
 const LanguageContext = React.createContext();
 const languageReducer = (state, action) => {
@@ -54,6 +57,7 @@ function LanguageProvider({ children }) {
         previouslyUnknown: [],
     };
     const [state, dispatch] = useReducer(languageReducer, initialState);
+
     const toJson = file =>
         new Promise((resolve, reject) => {
             Papa.parse(file, {
@@ -100,41 +104,22 @@ function LanguageProvider({ children }) {
             }
             return acc;
         }, {});
-        const cleanedLevelTwo = levelTwo.filter(level => {
-            if (!seen[level.symbol]) {
-                seen[level.symbol] = true;
-                return true;
-            }
-            return false;
-        });
-        const cleanedLevelThree = levelThree.filter(level => {
-            if (!seen[level.symbol]) {
-                seen[level.symbol] = true;
-                return true;
-            }
-            return false;
-        });
-        const cleanedLevelFour = levelFour.filter(level => {
-            if (!seen[level.symbol]) {
-                seen[level.symbol] = true;
-                return true;
-            }
-            return false;
-        });
-        const cleanedLevelFive = levelFive.filter(level => {
-            if (!seen[level.symbol]) {
-                seen[level.symbol] = true;
-                return true;
-            }
-            return false;
-        });
-        const cleanedLevelSix = levelSix.filter(level => {
-            if (!seen[level.symbol]) {
-                seen[level.symbol] = true;
-                return true;
-            }
-            return false;
-        });
+        const cleanedLevelTwo = levelTwo.filter(level =>
+            filterUniqueSymbols(level, seen),
+        );
+        const cleanedLevelThree = levelThree.filter(level =>
+            filterUniqueSymbols(level, seen),
+        );
+        const cleanedLevelFour = levelFour.filter(level =>
+            filterUniqueSymbols(level, seen),
+        );
+        const cleanedLevelFive = levelFive.filter(level =>
+            filterUniqueSymbols(level, seen),
+        );
+        const cleanedLevelSix = levelSix.filter(level =>
+            filterUniqueSymbols(level, seen),
+        );
+
         const state = {
             levelOne,
             levelTwo: cleanedLevelTwo,

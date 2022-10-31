@@ -13,7 +13,7 @@ import {
 
 import { CustomHeader } from '../components/header';
 import { Routes } from '../helpers/constants';
-import { UserContext } from '../helpers/usercontext';
+import { UserContext } from '../contexts/usercontext';
 import { DetailScreen } from './details';
 import { GameScreen } from './gameScreen';
 import { HomeScreen } from './homescreen';

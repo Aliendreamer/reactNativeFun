@@ -16,3 +16,11 @@ export const getLanguageListsFromStorage = async () => {
         : JSON.parse(currentList[1][1]);
     return { knownArray, unknownArray };
 };
+
+export const filterUniqueSymbols = (level, seen) => {
+    if (!seen[level.symbol]) {
+        seen[level.symbol] = true;
+        return true;
+    }
+    return false;
+};

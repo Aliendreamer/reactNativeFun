@@ -4,7 +4,7 @@ import { SafeAreaView, View, StyleSheet } from 'react-native';
 import { Button, Text, SegmentedButtons, Checkbox } from 'react-native-paper';
 
 import { PlayOptions, Routes } from '../helpers/constants';
-import { LanguageContext } from '../helpers/languagecontext';
+import { LanguageContext } from '../contexts/languagecontext';
 
 export function DetailScreen({ navigation }) {
     const [levels, setLevels] = useState([

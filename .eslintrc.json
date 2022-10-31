@@ -19,11 +19,14 @@
 	"rules": {
 		"import/no-unresolved": 0,
 		"import/prefer-default-export": "off",
-		"react/jsx-props-no-spreading": "off",
 		"no-use-before-define": "off",
 		"no-restricted-syntax": "off",
+		"no-param-reassign":"off",
+		"react/jsx-props-no-spreading": "off",
 		"react/jsx-filename-extension": "off",
 		"react/no-array-index-key":"warn",
+		"react/prop-types": "off",
+		"react/no-unstable-nested-components": "off",
 		"no-unused-expressions":["error",{
 			"allowTernary" :true,
 			"enforceForJSX":true
@@ -32,9 +35,7 @@
 			"error",
 			"never"
 		],
-		"react/prop-types": 0,
 		"no-shadow": "off",
-		"react/no-unstable-nested-components": "off",
 		"prettier/prettier": [
 			"error",
 			{
