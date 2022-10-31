@@ -8,6 +8,7 @@ export const ReducerActions = Object.freeze({
     INIT_LANGUAGES: 'init_languages',
     SET_LANGUAGE_COMBINATION: 'set_language_combination',
     SET_LANGUAGE_OPTIONS: 'set_language_options',
+    SET_USER_WORDS_LISTS: 'set_user_words_lists',
 });
 
 export const StorageKeys = Object.freeze({

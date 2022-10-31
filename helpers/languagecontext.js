@@ -29,6 +29,12 @@ const languageReducer = (state, action) => {
                 ...state,
                 languageOptions: action.payload,
             };
+        case ReducerActions.SET_USER_WORDS_LISTS:
+            return {
+                ...state,
+                previouslyKnown: action.payload.previouslyKnown,
+                previouslyUnknown: action.payload.previouslyUnknown,
+            };
         default:
             return state;
     }
@@ -155,8 +161,16 @@ function LanguageProvider({ children }) {
             type: ReducerActions.SET_LANGUAGE_OPTIONS,
             payload: option,
         });
+    const setUserWordsLists = lists =>
+        dispatch({ type: ReducerActions.SET_USER_WORDS_LISTS, payload: lists });
     const contentValue = useMemo(() => {
-        return { state, setCombination, setLanguages, setLanguageOptions };
+        return {
+            state,
+            setCombination,
+            setLanguages,
+            setLanguageOptions,
+            setUserWordsLists,
+        };
     }, [state, setLanguages]);
     return (
         <LanguageContext.Provider value={contentValue}>

@@ -28,9 +28,12 @@ export function SwipeList({ data }) {
     } = useContext(UserContext);
     const {
         state: { currentCombination },
+        setUserWordsLists,
     } = useContext(LanguageContext);
     const [knownCards, setKnownCards] = useState(0);
     const [unknownCards, setUnknownCards] = useState(0);
+    const [knownIeropgliph, setKnownIeropgliph] = useState([]);
+    const [unknownIeropgliph, setunknownIeropgliph] = useState([]);
     const [showHint, setShowHint] = useState(false);
     const [hint, setHint] = useState(null);
     const [pronounce, setPronounce] = useState(null);
@@ -47,6 +50,8 @@ export function SwipeList({ data }) {
         setProgress(Math.abs(index / total).toPrecision(1));
         setUnknownCards(unknownCards + 1);
         setVisible(total === index);
+        unknownIeropgliph.push(data[index].symbol);
+        setunknownIeropgliph([...unknownIeropgliph]);
         lastDirection.current = SwipeDirection.LEFT;
     };
 
@@ -54,14 +59,46 @@ export function SwipeList({ data }) {
         setCardIndex(index);
         setProgress(Math.abs(index / total).toPrecision(1));
         setKnownCards(knownCards + 1);
+        knownIeropgliph.push(data[index].symbol);
+        setKnownIeropgliph([...knownIeropgliph]);
         setVisible(total === index);
         lastDirection.current = SwipeDirection.RIGHT;
+    };
+
+    const updateWordLists = async () => {
+        const currentList = await AsyncStorage.multiGet([
+            StorageKeys.KnownSymbols,
+            StorageKeys.UnknownSymbols,
+        ]);
+        const known = isEmpty(currentList[0][1])
+            ? []
+            : JSON.parse(currentList[0][1]);
+
+        const unknown = isEmpty(currentList[1][1])
+            ? []
+            : JSON.parse(currentList[1][1]);
+        const newKnownList = [...new Set(known.concat(knownIeropgliph))];
+        const newUnknownList = [...new Set(unknown.concat(unknownIeropgliph))];
+        await AsyncStorage.multiSet([
+            [StorageKeys.KnownSymbols, JSON.stringify(newKnownList)],
+            [StorageKeys.UnknownSymbols, JSON.stringify(newUnknownList)],
+        ]);
+        setUserWordsLists({
+            previouslyKnown: newKnownList,
+            previouslyUnknown: newUnknownList,
+        });
     };
 
     return (
         <SafeAreaView>
             <Portal>
-                <Dialog visible={visible} onDismiss={() => setVisible(false)}>
+                <Dialog
+                    visible={visible}
+                    onDismiss={async () => {
+                        await updateWordLists();
+                        setVisible(false);
+                    }}
+                >
                     <Dialog.Title>Final result</Dialog.Title>
                     <Dialog.Content>
                         <Text>
@@ -73,13 +110,16 @@ export function SwipeList({ data }) {
                     </Dialog.Content>
                     <Dialog.Actions>
                         <Button
-                            onPress={() => navigation.navigate(Routes.DETAILS)}
+                            onPress={async () => {
+                                await updateWordLists();
+                                navigation.navigate(Routes.DETAILS);
+                            }}
                         >
                             close
                         </Button>
                         <Button
                             onPress={async () => {
-                                const scores = AsyncStorage.getItem(
+                                const scores = await AsyncStorage.getItem(
                                     StorageKeys.USERSCORES,
                                 );
                                 const userScores = isEmpty(scores)
@@ -94,10 +134,11 @@ export function SwipeList({ data }) {
                                     ).toPrecision(2),
                                 });
                                 setScores(userScores);
-                                AsyncStorage.setItem(
+                                await AsyncStorage.setItem(
                                     StorageKeys,
                                     JSON.stringify(userScores),
                                 );
+                                await updateWordLists();
                                 navigation.navigate(Routes.DETAILS);
                             }}
                         >
@@ -223,9 +264,17 @@ export function SwipeList({ data }) {
                         setProgress(Math.abs(index / total).toPrecision(1));
                         setCardIndex(index);
                         setVisible(total === index);
-                        lastDirection.current === SwipeDirection.RIGHT
-                            ? setKnownCards(knownCards - 1)
-                            : setUnknownCards(unknownCards - 1);
+                        const isRight =
+                            lastDirection.current === SwipeDirection.RIGHT;
+                        if (isRight) {
+                            setKnownCards(knownCards - 1);
+                            knownIeropgliph.pop();
+                            setKnownIeropgliph([...knownIeropgliph]);
+                        } else {
+                            setUnknownCards(unknownCards - 1);
+                            unknownIeropgliph.pop();
+                            unknownIeropgliph([...unknownIeropgliph]);
+                        }
                     }}
                 >
                     <View style={styles.buttonView}>
