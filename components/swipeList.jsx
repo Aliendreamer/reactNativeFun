@@ -18,6 +18,7 @@ import {
 
 import { Routes, StorageKeys, SwipeDirection } from '../helpers/constants';
 import { LanguageContext } from '../helpers/languagecontext';
+import { getLanguageListsFromStorage } from '../helpers/reusable';
 import { UserContext } from '../helpers/usercontext';
 
 export function SwipeList({ data }) {
@@ -66,19 +67,13 @@ export function SwipeList({ data }) {
     };
 
     const updateWordLists = async () => {
-        const currentList = await AsyncStorage.multiGet([
-            StorageKeys.KnownSymbols,
-            StorageKeys.UnknownSymbols,
-        ]);
-        const known = isEmpty(currentList[0][1])
-            ? []
-            : JSON.parse(currentList[0][1]);
+        const { knownArray, unknownArray } =
+            await getLanguageListsFromStorage();
 
-        const unknown = isEmpty(currentList[1][1])
-            ? []
-            : JSON.parse(currentList[1][1]);
-        const newKnownList = [...new Set(known.concat(knownIeropgliph))];
-        const newUnknownList = [...new Set(unknown.concat(unknownIeropgliph))];
+        const newKnownList = [...new Set(knownArray.concat(knownIeropgliph))];
+        const newUnknownList = [
+            ...new Set(unknownArray.concat(unknownIeropgliph)),
+        ];
         await AsyncStorage.multiSet([
             [StorageKeys.KnownSymbols, JSON.stringify(newKnownList)],
             [StorageKeys.UnknownSymbols, JSON.stringify(newUnknownList)],
