@@ -9,8 +9,8 @@ When in main menu /choosing the levels:
 
 When in play:
 1. Add "Return to levels" button to manage the levels when playing -> done
-2. Add green tick from right of the cards for adding to Known list
-3. Add red tick from left of the cards for adding to Unknown list
+2. Add green tick from right of the cards for adding to Known list -> done
+3. Add red tick from left of the cards for adding to Unknown list -> done
 4. Add button for Pinyin -> done
 5. Change Hint to Translate -> done
 6. Should add indicator for known and unknown words similar to the "Current cards progress", but from left to write the number of the

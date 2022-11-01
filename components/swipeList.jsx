@@ -14,6 +14,7 @@ import {
     MD3Colors,
     Text,
     Divider,
+    Checkbox,
 } from 'react-native-paper';
 
 import { Routes, StorageKeys, SwipeDirection } from '../helpers/constants';
@@ -45,14 +46,18 @@ export function SwipeList({ data }) {
     const [visible, setVisible] = useState(false);
     const navigation = useNavigation();
     const lastDirection = useRef(SwipeDirection.RIGHT);
+    const [recordKnown, setRecordKnown] = useState(true);
+    const [recordUnknown, setRecordUnknown] = useState(true);
 
     const onSwipedLeft = index => {
         setCardIndex(index);
         setProgress(Math.abs(index / total).toPrecision(1));
         setUnknownCards(unknownCards + 1);
+        if (recordUnknown) {
+            unknownIeropgliph.push(data[index].symbol);
+            setunknownIeropgliph([...unknownIeropgliph]);
+        }
         setVisible(total === index);
-        unknownIeropgliph.push(data[index].symbol);
-        setunknownIeropgliph([...unknownIeropgliph]);
         lastDirection.current = SwipeDirection.LEFT;
     };
 
@@ -60,8 +65,11 @@ export function SwipeList({ data }) {
         setCardIndex(index);
         setProgress(Math.abs(index / total).toPrecision(1));
         setKnownCards(knownCards + 1);
-        knownIeropgliph.push(data[index].symbol);
-        setKnownIeropgliph([...knownIeropgliph]);
+        if (recordUnknown) {
+            knownIeropgliph.push(data[index].symbol);
+            setKnownIeropgliph([...knownIeropgliph]);
+        }
+
         setVisible(total === index);
         lastDirection.current = SwipeDirection.RIGHT;
     };
@@ -155,6 +163,18 @@ export function SwipeList({ data }) {
                 </Text>
             </View>
             <View style={styles.list}>
+                <View style={styles.knownCheck}>
+                    <Checkbox
+                        status={recordKnown ? 'checked' : 'unchecked'}
+                        onPress={() => setRecordKnown(!recordKnown)}
+                    />
+                </View>
+                <View style={styles.unknownCheck}>
+                    <Checkbox
+                        status={recordUnknown ? 'checked' : 'unchecked'}
+                        onPress={() => setRecordUnknown(!recordUnknown)}
+                    />
+                </View>
                 <Swiper
                     containerStyle={styles.swiper}
                     // eslint-disable-next-line no-return-assign
@@ -374,7 +394,14 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         height: 500,
         maxHeight: 500,
-        justifyContent: 'center',
+    },
+    knownCheck: {
+        position: 'absolute',
+        left: 20,
+    },
+    unknownCheck: {
+        position: 'absolute',
+        right: 20,
     },
     swiper: {
         paddingTop: 10,
