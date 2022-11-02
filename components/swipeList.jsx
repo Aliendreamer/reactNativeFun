@@ -14,6 +14,7 @@ import {
     MD3Colors,
     Text,
     Divider,
+    useTheme,
     Checkbox,
 } from 'react-native-paper';
 
@@ -32,6 +33,7 @@ export function SwipeList({ data }) {
         state: { currentCombination },
         setUserWordsLists,
     } = useContext(LanguageContext);
+    const theme = useTheme();
     const [knownCards, setKnownCards] = useState(0);
     const [unknownCards, setUnknownCards] = useState(0);
     const [knownIeropgliph, setKnownIeropgliph] = useState([]);
@@ -184,6 +186,7 @@ export function SwipeList({ data }) {
                     disableTopSwipe
                     disableBottomSwipe
                     infinite={false}
+                    backgroundColor={theme.colors.background}
                     overlayOpacityHorizontalThreshold={100 / 6}
                     onSwipedLeft={onSwipedLeft}
                     onSwipedRight={onSwipedRight}
