@@ -164,12 +164,14 @@ export function SwipeList({ data }) {
             </View>
             <View style={styles.list}>
                 <View style={styles.knownCheck}>
+                    <Text variant="titleMedium">Record known</Text>
                     <Checkbox
                         status={recordKnown ? 'checked' : 'unchecked'}
                         onPress={() => setRecordKnown(!recordKnown)}
                     />
                 </View>
                 <View style={styles.unknownCheck}>
+                    <Text variant="titleMedium">Record unknown</Text>
                     <Checkbox
                         status={recordUnknown ? 'checked' : 'unchecked'}
                         onPress={() => setRecordUnknown(!recordUnknown)}
@@ -281,11 +283,12 @@ export function SwipeList({ data }) {
                         setVisible(total === index);
                         const isRight =
                             lastDirection.current === SwipeDirection.RIGHT;
-                        if (isRight) {
+                        if (isRight && recordKnown) {
                             setKnownCards(knownCards - 1);
                             knownIeropgliph.pop();
                             setKnownIeropgliph([...knownIeropgliph]);
-                        } else {
+                        }
+                        if (!isRight && recordUnknown) {
                             setUnknownCards(unknownCards - 1);
                             unknownIeropgliph.pop();
                             unknownIeropgliph([...unknownIeropgliph]);

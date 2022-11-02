@@ -9,7 +9,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-
+workload-install.sh
 # macOS
 .DS_Store
 .eslintcache
