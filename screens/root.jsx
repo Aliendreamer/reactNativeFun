@@ -17,6 +17,7 @@ import { UserContext } from '../contexts/usercontext';
 import { DetailScreen } from './details';
 import { GameScreen } from './gameScreen';
 import { HomeScreen } from './homescreen';
+import { CreateScreen } from './createScreen';
 
 const CombinedDefaultTheme = {
     ...PaperDefaultTheme,
@@ -60,6 +61,13 @@ export function Root() {
                     <Stack.Screen
                         name={Routes.GAME}
                         component={GameScreen}
+                        options={{
+                            header: props => <CustomHeader {...props} />,
+                        }}
+                    />
+                    <Stack.Screen
+                        name={Routes.CREATE}
+                        component={CreateScreen}
                         options={{
                             header: props => <CustomHeader {...props} />,
                         }}

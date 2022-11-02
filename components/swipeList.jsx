@@ -191,7 +191,7 @@ export function SwipeList({ data }) {
                     onSwipedLeft={onSwipedLeft}
                     onSwipedRight={onSwipedRight}
                     cards={data}
-                    cardIndex={0}
+                    cardIndex={cardIndex}
                     pointerEvents="auto"
                     // cardIndex={cardIndex}
                     cardStyle={styles.card}

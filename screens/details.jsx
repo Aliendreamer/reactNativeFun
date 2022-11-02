@@ -26,6 +26,17 @@ export function DetailScreen({ navigation }) {
             <Button
                 style={styles.clearButton}
                 compact
+                mode="compact"
+                onPress={() => navigation.navigate(Routes.CREATE)}
+            >
+                <View style={styles.buttonView}>
+                    <MaterialIcons style={styles.buttonIcon} name="create" />
+                    <Text style={styles.buttonText}>create new list</Text>
+                </View>
+            </Button>
+            <Button
+                style={styles.clearButton}
+                compact
                 mode="outlined"
                 onPress={() =>
                     setLevels([false, false, false, false, false, false])
