@@ -8,7 +8,7 @@
 		"ios": "expo start --ios",
 		"web": "expo start --web",
 		"lint": "npx eslint . --ext .js --ext .jsx --fix",
-		"init:config":"npx mrm lint-staged"
+		"init:config": "npx mrm lint-staged"
 	},
 	"dependencies": {
 		"@expo/vector-icons": "13.0.0",
@@ -18,8 +18,10 @@
 		"@react-navigation/native-stack": "6.9.1",
 		"expo": "46.0.16",
 		"expo-asset": "8.6.1",
+		"expo-file-system": "~14.1.0",
 		"expo-splash-screen": "0.16.2",
 		"expo-status-bar": "1.4.0",
+		"expo-web-browser": "~11.0.0",
 		"install": "0.13.0",
 		"lodash": "4.17.21",
 		"papaparse": "5.3.2",

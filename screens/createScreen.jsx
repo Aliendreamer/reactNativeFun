@@ -1,76 +1,152 @@
-import React, { useState, useEffect } from 'react';
-import { DataTable, TextInput } from 'react-native-paper';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { DataTable, Button, TextInput } from 'react-native-paper';
+import { Text, View, ScrollView, Platform, StyleSheet } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import Papa from 'papaparse';
+import { isEmpty } from 'lodash';
+import * as FileSystem from 'expo-file-system';
+import TableRowsRenderer from '../components/tableRow';
+import { Routes } from '../helpers/constants';
 
-const optionsPerPage = [2, 3, 4];
-
-export function CreateScreen() {
+export function CreateScreen({ navigation }) {
+    const [title, setListTitle] = useState('');
     const [page, setPage] = useState(0);
-    const [itemsPerPage, setItemsPerPage] = React.useState(optionsPerPage[0]);
-    const [text, setText] = useState('test');
-    useEffect(() => {
-        setPage(0);
-    }, [itemsPerPage]);
+    const [refresh, setRefresh] = useState(false);
+    const itemsPerPage = 10;
 
+    const itemValues = useRef(
+        Array(10)
+            .fill(0)
+            .map(() => ({
+                symbol: '',
+                hints: '',
+                pronounce: '',
+            })),
+    );
+    const updateValue = (index, field, value) => {
+        const x = itemValues.current[index];
+        x[field] = value;
+        itemValues.current[index] = x;
+        setRefresh(true);
+    };
+
+    const saveList = async () => {
+        const data = itemValues.current
+            .filter(
+                object => !Object.values(object).every(value => isEmpty(value)),
+            )
+            .map((value, index) => {
+                return {
+                    id: index,
+                    symbol: value.symbol,
+                    hints: value.hints.split(',').join(';'),
+                    pronounce: value.pronounce,
+                };
+            });
+        const csv = Papa.unparse({
+            fields: ['id', 'symbol', 'pronounce', 'hints'],
+            data,
+        });
+        if (Platform.OS !== 'web') {
+            const fileDir = 'languageList/';
+            const dirUri = FileSystem.documentDirectory + fileDir;
+            const dirInfo = await FileSystem.getInfoAsync(dirUri);
+            if (!dirInfo.exists) {
+                await FileSystem.makeDirectoryAsync(dirUri, {
+                    intermediates: true,
+                });
+            }
+            const listFile = `${dirUri + title}.csv`;
+            await FileSystem.writeToFileAsync(listFile, csv, {
+                encoding: 'utf8',
+            });
+        }
+    };
+
+    const addRows = () => {
+        itemValues.current.push(
+            ...Array(10)
+                .fill(0)
+                .map(() => ({
+                    symbol: '',
+                    hints: '',
+                    pronounce: '',
+                })),
+        );
+        setRefresh(true);
+    };
+    useEffect(() => {
+        if (refresh) {
+            setRefresh(false);
+        }
+    }, [page, refresh]);
     return (
-        <SafeAreaView>
-            <TextInput value={text} onChangeText={v => setText(v)} />
+        <ScrollView horizontal={false}>
+            <TextInput
+                value={title}
+                mode="outlined"
+                label="symbol list title"
+                placeholder="List title"
+                onChangeText={v => setListTitle(v)}
+            />
             <DataTable>
                 <DataTable.Header>
-                    <DataTable.Title style={styles.cell}>Index</DataTable.Title>
                     <DataTable.Title style={styles.cell}>
                         Symbol
                     </DataTable.Title>
                     <DataTable.Title style={styles.cell}>
                         Pinyan
                     </DataTable.Title>
-                    <DataTable.Title style={styles.cell}>
-                        Translate
-                    </DataTable.Title>
+                    <DataTable.Title style={styles.cell}>Hints</DataTable.Title>
                 </DataTable.Header>
-                <DataTable.Row>
-                    <DataTable.Cell style={styles.cell}>
-                        <TextInput
-                            value={text}
+                {itemValues.current
+                    .slice(
+                        itemsPerPage * page,
+                        itemsPerPage * page + itemsPerPage,
+                    )
+                    .map((value, index) => (
+                        <TableRowsRenderer
+                            key={index}
                             style={styles.cell}
-                            onChangeText={v => setText(v)}
+                            index={index}
+                            object={value}
+                            updateValue={updateValue}
                         />
-                    </DataTable.Cell>
-                    <DataTable.Cell style={styles.cell}>
-                        <TextInput
-                            value={text}
-                            style={styles.cell}
-                            onChangeText={v => setText(v)}
-                        />
-                    </DataTable.Cell>
-                    <DataTable.Cell style={styles.cell}>
-                        <TextInput
-                            value={text}
-                            style={styles.cell}
-                            onChangeText={v => setText(v)}
-                        />
-                    </DataTable.Cell>
-                    <DataTable.Cell style={styles.cell}>
-                        <TextInput
-                            value={text}
-                            style={styles.cell}
-                            onChangeText={v => setText(v)}
-                        />
-                    </DataTable.Cell>
-                </DataTable.Row>
+                    ))}
                 <DataTable.Pagination
                     page={page}
-                    numberOfPages={3}
+                    numberOfPages={Math.abs(
+                        Math.ceil(itemValues.current.length / itemsPerPage),
+                    )}
                     onPageChange={page => setPage(page)}
-                    label="1-2 of 6"
-                    optionsPerPage={optionsPerPage}
+                    label={`page ${page + 1} of ${Math.abs(
+                        Math.ceil(itemValues.current.length / itemsPerPage),
+                    )}`}
+                    optionsPerPage={itemsPerPage}
                     itemsPerPage={itemsPerPage}
-                    setItemsPerPage={setItemsPerPage}
+                    setItemsPerPage={() => {}}
                     showFastPagination
                     optionsLabel="Rows per page"
                 />
             </DataTable>
-        </SafeAreaView>
+            <View style={styles.buttons}>
+                <Button mode="elevated" onPress={() => addRows()}>
+                    <Ionicons name="md-add" />
+                    <Text> Add rows</Text>
+                </Button>
+                <Button mode="elevated" onPress={() => saveList()}>
+                    <MaterialCommunityIcons name="content-save-all-outline" />
+                    <Text>Save list</Text>
+                </Button>
+                <Button
+                    mode="elevated"
+                    onPress={() => navigation.navigate(Routes.DETAILS)}
+                >
+                    <Ionicons name="backspace-outline" />
+                    <Text>Back to levels</Text>
+                </Button>
+            </View>
+        </ScrollView>
     );
 }
 
@@ -78,6 +154,12 @@ const styles = StyleSheet.create({
     cell: {
         width: '100%',
         padding: 0,
+    },
+    buttons: {
+        flex: 1,
+        marginHorizontal: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     text: {
         width: '100%',

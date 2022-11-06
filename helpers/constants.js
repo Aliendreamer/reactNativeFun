@@ -36,3 +36,9 @@ export const SwipeDirection = Object.freeze({
     RIGHT: 'right',
     LEFT: 'left',
 });
+export const SymbolFields = Object.freeze({
+    ID: 'id',
+    SYMBOL: 'symbol',
+    PRONOUNCE: 'pronounce',
+    HINTS: 'hints',
+});

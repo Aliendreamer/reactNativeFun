@@ -69,7 +69,7 @@ export function Root() {
                         name={Routes.CREATE}
                         component={CreateScreen}
                         options={{
-                            header: props => <CustomHeader {...props} />,
+                            headerShown: false,
                         }}
                     />
                 </Stack.Navigator>
