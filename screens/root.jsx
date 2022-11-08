@@ -18,6 +18,8 @@ import { DetailScreen } from './details';
 import { GameScreen } from './gameScreen';
 import { HomeScreen } from './homescreen';
 import { CreateScreen } from './createScreen';
+import { ManageScreen } from './manageScreen';
+import { EditScreen } from './editScreen';
 
 const CombinedDefaultTheme = {
     ...PaperDefaultTheme,
@@ -70,6 +72,20 @@ export function Root() {
                         component={CreateScreen}
                         options={{
                             headerShown: false,
+                        }}
+                    />
+                    <Stack.Screen
+                        name={Routes.MANAGE}
+                        component={ManageScreen}
+                        options={{
+                            header: props => <CustomHeader {...props} />,
+                        }}
+                    />
+                    <Stack.Screen
+                        name={Routes.EDIT}
+                        component={EditScreen}
+                        options={{
+                            header: props => <CustomHeader {...props} />,
                         }}
                     />
                 </Stack.Navigator>

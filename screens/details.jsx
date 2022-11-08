@@ -28,6 +28,17 @@ export function DetailScreen({ navigation }) {
                 style={styles.clearButton}
                 compact
                 mode="compact"
+                onPress={() => navigation.navigate(Routes.MANAGE)}
+            >
+                <View style={styles.buttonView}>
+                    <MaterialIcons style={styles.buttonIcon} name="create" />
+                    <Text style={styles.buttonText}>edit custom lists</Text>
+                </View>
+            </Button>
+            <Button
+                style={styles.clearButton}
+                compact
+                mode="compact"
                 onPress={() => navigation.navigate(Routes.CREATE)}
             >
                 <View style={styles.buttonView}>

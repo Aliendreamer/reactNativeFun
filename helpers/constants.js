@@ -27,6 +27,9 @@ export const Routes = Object.freeze({
     DETAILS: 'details',
     GAME: 'game',
     CREATE: 'create',
+    DELETE: 'delete',
+    MANAGE: 'manage',
+    EDIT: 'edit',
 });
 export const PlayOptions = Object.freeze({
     PlayAll: 'Play All',
