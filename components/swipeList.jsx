@@ -191,7 +191,6 @@ export function SwipeList({ data }) {
                     onSwipedLeft={onSwipedLeft}
                     onSwipedRight={onSwipedRight}
                     cards={data}
-                    cardIndex={cardIndex}
                     pointerEvents="auto"
                     // cardIndex={cardIndex}
                     cardStyle={styles.card}
@@ -210,7 +209,7 @@ export function SwipeList({ data }) {
                     verticalSwipe={false}
                     swipeBackCard
                     horizontalSwipe
-                    stackSize={3}
+                    stackSize={2}
                     showSecondCard
                     overlayLabels={{
                         left: {

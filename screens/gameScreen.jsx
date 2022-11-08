@@ -16,6 +16,7 @@ export function GameScreen({ route }) {
             levelFour,
             levelFive,
             levelSix,
+            userLevels,
             languageOptions,
             previouslyKnown,
             previouslyUnknown,
@@ -26,6 +27,9 @@ export function GameScreen({ route }) {
         let index = 0;
         let dataLanguages = [];
         const combination = [];
+        const userLists = Object.keys(userLevels)
+            .sort()
+            .map(key => userLevels[key]);
         for (const shouldAdd of levels) {
             if (shouldAdd) {
                 switch (index) {
@@ -53,8 +57,13 @@ export function GameScreen({ route }) {
                         dataLanguages = dataLanguages.concat(levelSix);
                         combination.push(index + 1);
                         break;
-                    default:
+                    default: {
+                        const num = index - 6;
+                        const newLevel = userLists[num];
+                        dataLanguages = dataLanguages.concat(newLevel);
+                        combination.push(index + 1);
                         break;
+                    }
                 }
             }
             index += 1;

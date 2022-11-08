@@ -9,6 +9,7 @@ export const ReducerActions = Object.freeze({
     SET_LANGUAGE_COMBINATION: 'set_language_combination',
     SET_LANGUAGE_OPTIONS: 'set_language_options',
     SET_USER_WORDS_LISTS: 'set_user_words_lists',
+    UPDATE_USER_LANGUAGE_LISTS: 'update_user_language_lists',
 });
 
 export const StorageKeys = Object.freeze({
@@ -18,6 +19,7 @@ export const StorageKeys = Object.freeze({
     APPTHEME: 'appTheme',
     KnownSymbols: 'known_symbols',
     UnknownSymbols: 'unknown_symbols',
+    USER_SYMBOL_LISTS: 'userSymbolLists',
 });
 
 export const Routes = Object.freeze({

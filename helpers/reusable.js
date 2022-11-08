@@ -24,3 +24,8 @@ export const filterUniqueSymbols = (level, seen) => {
     }
     return false;
 };
+export const getUserLanguageLists = async () => {
+    const list = await AsyncStorage.getItem(StorageKeys.USER_SYMBOL_LISTS);
+    const parsedlist = isEmpty(list) ? {} : JSON.parse(list);
+    return parsedlist;
+};

@@ -1,12 +1,15 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useState, useContext } from 'react';
-import { SafeAreaView, View, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { Button, Text, SegmentedButtons, Checkbox } from 'react-native-paper';
-
 import { PlayOptions, Routes } from '../helpers/constants';
 import { LanguageContext } from '../contexts/languagecontext';
 
 export function DetailScreen({ navigation }) {
+    const {
+        state: { languageOptions, userLevels },
+        setLanguageOptions,
+    } = useContext(LanguageContext);
     const [levels, setLevels] = useState([
         false,
         false,
@@ -14,14 +17,12 @@ export function DetailScreen({ navigation }) {
         false,
         false,
         false,
+        ...Object.keys(userLevels)
+            .sort()
+            .map(() => false),
     ]);
-    const {
-        state: { languageOptions },
-        setLanguageOptions,
-    } = useContext(LanguageContext);
-
     return (
-        <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.container}>
             <Text style={styles.text}> Choose language levels</Text>
             <Button
                 style={styles.clearButton}
@@ -110,6 +111,21 @@ export function DetailScreen({ navigation }) {
                     setLevels([...newLevels]);
                 }}
             />
+            {Object.keys(userLevels)
+                .sort()
+                .map((key, index) => (
+                    <Checkbox.Item
+                        key={key}
+                        label={key}
+                        status={levels[5 + index + 1] ? 'checked' : 'unchecked'}
+                        labelVariant="displayMedium"
+                        onPress={() => {
+                            const newLevels = [...levels];
+                            newLevels[5 + index + 1] = !levels[6 + index + 1];
+                            setLevels([...newLevels]);
+                        }}
+                    />
+                ))}
             <View>
                 <SegmentedButtons
                     style={styles.segmentedButton}
@@ -148,7 +164,7 @@ export function DetailScreen({ navigation }) {
                     </View>
                 </Button>
             </View>
-        </SafeAreaView>
+        </ScrollView>
     );
 }
 const styles = StyleSheet.create({

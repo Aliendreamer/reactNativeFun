@@ -1,17 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { DataTable, Button, TextInput } from 'react-native-paper';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import {
+    DataTable,
+    Button,
+    TextInput,
+    Portal,
+    Dialog,
+} from 'react-native-paper';
 import { Text, View, ScrollView, Platform, StyleSheet } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Papa from 'papaparse';
 import { isEmpty } from 'lodash';
 import * as FileSystem from 'expo-file-system';
+import AsyncStorage from '@react-native-community/async-storage';
 import TableRowsRenderer from '../components/tableRow';
-import { Routes } from '../helpers/constants';
+import { Routes, StorageKeys } from '../helpers/constants';
+import { getUserLanguageLists } from '../helpers/reusable';
+import { LanguageContext } from '../contexts/languagecontext';
 
 export function CreateScreen({ navigation }) {
     const [title, setListTitle] = useState('');
     const [page, setPage] = useState(0);
     const [refresh, setRefresh] = useState(false);
+    const [visible, setVisible] = useState(false);
+    const { setUserSymbolLists } = useContext(LanguageContext);
     const itemsPerPage = 10;
 
     const itemValues = useRef(
@@ -31,6 +42,10 @@ export function CreateScreen({ navigation }) {
     };
 
     const saveList = async () => {
+        if (isEmpty(title)) {
+            setVisible(true);
+            return;
+        }
         const data = itemValues.current
             .filter(
                 object => !Object.values(object).every(value => isEmpty(value)),
@@ -39,7 +54,7 @@ export function CreateScreen({ navigation }) {
                 return {
                     id: index,
                     symbol: value.symbol,
-                    hints: value.hints.split(',').join(';'),
+                    hints: value.hints.split(','),
                     pronounce: value.pronounce,
                 };
             });
@@ -60,9 +75,17 @@ export function CreateScreen({ navigation }) {
             await FileSystem.writeToFileAsync(listFile, csv, {
                 encoding: 'utf8',
             });
+        } else {
+            const existingLists = await getUserLanguageLists();
+            existingLists[title] = data;
+            await AsyncStorage.setItem(
+                StorageKeys.USER_SYMBOL_LISTS,
+                JSON.stringify(existingLists),
+            );
+            setUserSymbolLists(existingLists);
         }
+        navigation.navigate(Routes.DETAILS);
     };
-
     const addRows = () => {
         itemValues.current.push(
             ...Array(10)
@@ -89,6 +112,21 @@ export function CreateScreen({ navigation }) {
                 placeholder="List title"
                 onChangeText={v => setListTitle(v)}
             />
+            <Portal>
+                <Dialog visible={visible} onDismiss={() => setVisible(false)}>
+                    <Dialog.Title>Warning</Dialog.Title>
+                    <Dialog.Content>
+                        <Text>
+                            You cant save the list:
+                            {'\n'}
+                            name is not set
+                        </Text>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setVisible(false)}>close</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
             <DataTable>
                 <DataTable.Header>
                     <DataTable.Title style={styles.cell}>

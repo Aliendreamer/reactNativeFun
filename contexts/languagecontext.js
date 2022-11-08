@@ -12,6 +12,7 @@ import { PlayOptions, ReducerActions } from '../helpers/constants';
 import {
     filterUniqueSymbols,
     getLanguageListsFromStorage,
+    getUserLanguageLists,
 } from '../helpers/reusable';
 
 const LanguageContext = React.createContext();
@@ -38,6 +39,12 @@ const languageReducer = (state, action) => {
                 previouslyKnown: action.payload.previouslyKnown,
                 previouslyUnknown: action.payload.previouslyUnknown,
             };
+        case ReducerActions.UPDATE_USER_LANGUAGE_LISTS: {
+            return {
+                ...state,
+                userLevels: action.payload,
+            };
+        }
         default:
             return state;
     }
@@ -51,6 +58,7 @@ function LanguageProvider({ children }) {
         levelFour: [],
         levelFive: [],
         levelSix: [],
+        userLevels: {},
         currentCombination: [],
         languageOptions: PlayOptions.PlayAll,
         previouslyKnown: [],
@@ -95,6 +103,7 @@ function LanguageProvider({ children }) {
         const levelFour = await toJson(level4);
         const levelFive = await toJson(level5);
         const levelSix = await toJson(level6);
+        const userSymbolLists = await getUserLanguageLists();
         const { knownArray, unknownArray } =
             await getLanguageListsFromStorage();
         const seen = levelOne.filter(Boolean).reduce((acc, level) => {
@@ -119,7 +128,11 @@ function LanguageProvider({ children }) {
         const cleanedLevelSix = levelSix.filter(level =>
             filterUniqueSymbols(level, seen),
         );
-
+        for (const list of Object.keys(userSymbolLists)) {
+            userSymbolLists[list] = userSymbolLists[list].filter(level =>
+                filterUniqueSymbols(level, seen),
+            );
+        }
         const state = {
             levelOne,
             levelTwo: cleanedLevelTwo,
@@ -127,6 +140,7 @@ function LanguageProvider({ children }) {
             levelFour: cleanedLevelFour,
             levelFive: cleanedLevelFive,
             levelSix: cleanedLevelSix,
+            userLevels: userSymbolLists,
             currentCombination: [],
             languageOptions: PlayOptions.PlayAll,
             previouslyKnown: knownArray,
@@ -146,6 +160,13 @@ function LanguageProvider({ children }) {
         });
     const setUserWordsLists = lists =>
         dispatch({ type: ReducerActions.SET_USER_WORDS_LISTS, payload: lists });
+
+    const setUserSymbolLists = lists =>
+        dispatch({
+            type: ReducerActions.UPDATE_USER_LANGUAGE_LISTS,
+            payload: lists,
+        });
+
     const contentValue = useMemo(() => {
         return {
             state,
@@ -153,6 +174,7 @@ function LanguageProvider({ children }) {
             setLanguages,
             setLanguageOptions,
             setUserWordsLists,
+            setUserSymbolLists,
         };
     }, [state, setLanguages]);
     return (
