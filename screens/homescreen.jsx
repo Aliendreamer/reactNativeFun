@@ -1,6 +1,6 @@
 // In App.js in a new project
 
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SplashScreen from 'expo-splash-screen';
 import { isEmpty } from 'lodash';
 import React, {
@@ -63,20 +63,9 @@ export function HomeScreen({ navigation }) {
         return { key: index, name: value };
     });
 
-    const onLayoutRootView = useCallback(async () => {
-        if (appIsReady) {
-            await SplashScreen.hideAsync();
-        }
-    }, [appIsReady]);
-
-    if (!appIsReady) {
-        return null;
-    }
-
     return (
         <View
             style={{ ...styles.container, backgroundColor: theme.background }}
-            onLayoutRootView={onLayoutRootView}
         >
             <Text
                 numberOfLines={2}
@@ -109,7 +98,6 @@ export function HomeScreen({ navigation }) {
                 initialNumToRender={3}
                 contentContainerStyle={{ paddingRight: 50 }}
                 showsHorizontalScrollIndicator
-                scrollEventThrottle
                 data={data}
                 scrollEnabled
                 renderItem={({ item }) => (

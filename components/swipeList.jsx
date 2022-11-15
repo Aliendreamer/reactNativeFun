@@ -1,5 +1,5 @@
 import { AntDesign } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { isEmpty } from 'lodash';
 import React, { useRef, useState, useContext } from 'react';

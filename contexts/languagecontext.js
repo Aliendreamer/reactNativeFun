@@ -1,19 +1,18 @@
+/* eslint-disable import/extensions */
 import { isEmpty } from 'lodash';
-import Papa from 'papaparse';
 import React, { useCallback, useMemo, useReducer } from 'react';
-
-import level1 from '../assets/level1.csv';
-import level2 from '../assets/level2.csv';
-import level3 from '../assets/level3.csv';
-import level4 from '../assets/level4.csv';
-import level5 from '../assets/level5.csv';
-import level6 from '../assets/level6.csv';
 import { PlayOptions, ReducerActions } from '../helpers/constants';
 import {
     filterUniqueSymbols,
     getLanguageListsFromStorage,
     getUserLanguageLists,
 } from '../helpers/reusable';
+import level1 from '../assets/level1.json';
+import level2 from '../assets/level2.json';
+import level3 from '../assets/level3.json';
+import level4 from '../assets/level4.json';
+import level5 from '../assets/level5.json';
+import level6 from '../assets/level6.json';
 
 const LanguageContext = React.createContext();
 const languageReducer = (state, action) => {
@@ -66,43 +65,13 @@ function LanguageProvider({ children }) {
     };
     const [state, dispatch] = useReducer(languageReducer, initialState);
 
-    const toJson = file =>
-        new Promise((resolve, reject) => {
-            Papa.parse(file, {
-                download: true,
-                header: false,
-                encoding: 'utf-8',
-                error(err) {
-                    reject(err);
-                },
-                complete(results) {
-                    if (results.errors.length) {
-                        reject(results.errors);
-                    }
-                    const data = results.data
-                        .map(result => {
-                            return {
-                                id: result[0],
-                                symbol: result[1],
-                                pronounce: result[2],
-                                hints: isEmpty(result[3])
-                                    ? ''
-                                    : result[3].split(';'),
-                            };
-                        })
-                        .filter(Boolean);
-                    return resolve(data);
-                },
-            });
-        });
-
     const setLanguages = useCallback(async () => {
-        const levelOne = await toJson(level1);
-        const levelTwo = await toJson(level2);
-        const levelThree = await toJson(level3);
-        const levelFour = await toJson(level4);
-        const levelFive = await toJson(level5);
-        const levelSix = await toJson(level6);
+        const levelOne = level1;
+        const levelTwo = level2;
+        const levelThree = level3;
+        const levelFour = level4;
+        const levelFive = level5;
+        const levelSix = level6;
         const userSymbolLists = await getUserLanguageLists();
         const { knownArray, unknownArray } =
             await getLanguageListsFromStorage();

@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useContext } from 'react';
 import { StyleSheet } from 'react-native';
 import { useTheme, Appbar, TouchableRipple, Switch } from 'react-native-paper';

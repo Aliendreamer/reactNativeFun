@@ -2,10 +2,9 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import { DataTable, Button, TextInput } from 'react-native-paper';
 import { Text, View, ScrollView, Platform, StyleSheet } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import Papa from 'papaparse';
 import { isEmpty } from 'lodash';
 import * as FileSystem from 'expo-file-system';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import TableRowsRenderer from '../components/tableRow';
 import { Routes, StorageKeys } from '../helpers/constants';
 import { getUserLanguageLists } from '../helpers/reusable';
@@ -49,10 +48,6 @@ export function EditScreen({ route, navigation }) {
                     pronounce: value.pronounce,
                 };
             });
-        const csv = Papa.unparse({
-            fields: ['id', 'symbol', 'pronounce', 'hints'],
-            data,
-        });
         if (Platform.OS !== 'web') {
             const fileDir = 'languageList/';
             const dirUri = FileSystem.documentDirectory + fileDir;
@@ -62,8 +57,8 @@ export function EditScreen({ route, navigation }) {
                     intermediates: true,
                 });
             }
-            const listFile = `${dirUri + levelName}.csv`;
-            await FileSystem.writeToFileAsync(listFile, csv, {
+            const listFile = `${dirUri + levelName}.json`;
+            await FileSystem.writeToFileAsync(listFile, JSON.stringify(data), {
                 encoding: 'utf8',
             });
         } else {
