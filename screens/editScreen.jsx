@@ -58,9 +58,13 @@ export function EditScreen({ route, navigation }) {
                 });
             }
             const listFile = `${dirUri + levelName}.json`;
-            await FileSystem.writeToFileAsync(listFile, JSON.stringify(data), {
-                encoding: 'utf8',
-            });
+            await FileSystem.writeAsStringAsync(
+                listFile,
+                JSON.stringify(data),
+                {
+                    encoding: 'utf8',
+                },
+            );
         } else {
             const existingLists = await getUserLanguageLists();
             existingLists[levelName] = data;

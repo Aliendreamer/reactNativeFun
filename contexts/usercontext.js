@@ -66,8 +66,8 @@ function UserProvider({ children }) {
         });
     const setLaunchState = state =>
         dispatch({ type: ReducerActions.SET_LAUNCH_STATE, payload: state });
-    const setThemeState = state =>
-        dispatch({ type: ReducerActions.SET_THEME_STATE, payload: state });
+    const setThemeState = theme =>
+        dispatch({ type: ReducerActions.SET_THEME_STATE, payload: theme });
 
     const contentValue = useMemo(() => {
         return {

@@ -1112,7 +1112,7 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
-"@callstack/react-theme-provider@^3.0.7":
+"@callstack/react-theme-provider@^3.0.8":
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/@callstack/react-theme-provider/-/react-theme-provider-3.0.8.tgz#d0d7ac71e422133c5f7b78f4c4aa1bc57f156f50"
   integrity sha512-5U231sYY2sqQOaELX0WBCn+iluV8bFaXIS7em03k4W5Xz0AhGvKlnpLIhDGFP8im/SvNW7/2XoR0BsClhn9t6Q==
@@ -4144,6 +4144,11 @@ deepmerge@^3.2.0:
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-3.3.0.tgz#d3c47fd6f3a93d517b14426b0628a17b0125f5f7"
   integrity sha512-GRQOafGHwMHpjPx9iCvTgpu9NojZ49q794EEL94JVEw6VaeA8XTUyBKvAkOOjBX9oJNiV6G3P+T+tihFjo2TqA==
 
+deepmerge@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.2.2.tgz#44d2ea3679b8f4d4ffba33f03d865fc1e7bf4955"
+  integrity sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==
+
 default-gateway@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/default-gateway/-/default-gateway-4.2.0.tgz#167104c7500c2115f6dd69b0a536bb8ed720552b"
@@ -5009,7 +5014,7 @@ expo-error-recovery@~3.2.0:
   resolved "https://registry.yarnpkg.com/expo-error-recovery/-/expo-error-recovery-3.2.0.tgz#3a4543382904a5e70829cb41d7fc0f022c2bef6e"
   integrity sha512-XZ630ks5HNxa9oc2Ya1hEn1ez031Cy4VnyxerPC2o9fKNKSrD/64cRqGF9NkGM3X2uf8+PCB9adxVflAIXBf6w==
 
-expo-file-system@~14.1.0:
+expo-file-system@14.1.0, expo-file-system@~14.1.0:
   version "14.1.0"
   resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-14.1.0.tgz#4fa410873ef12ac8bec873593f7489f4305a14b8"
   integrity sha512-lJcPGQ8yKXVknVkD5TmcJnR/TpQbEL0JP8hknLejfq3FIqPqI/LBFn31YiP37grxW8lITz1al8pq5T6CSUjAzQ==
@@ -9515,10 +9520,10 @@ react-native-codegen@^0.69.2:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-deck-swiper@2.0.10:
-  version "2.0.10"
-  resolved "https://registry.yarnpkg.com/react-native-deck-swiper/-/react-native-deck-swiper-2.0.10.tgz#0e3d5d2c8143d548e8879b6e2b9fb11ad0f1a00d"
-  integrity sha512-4dDrmLyOEwrFyZ1f1Oii37LBw2J8ycTFYGsM1324Z4N/UWb8wfCuvQ6SRRtonTJq5Qwfoe6Jsj4dD7MUj6ldgA==
+react-native-deck-swiper@2.0.11:
+  version "2.0.11"
+  resolved "https://registry.yarnpkg.com/react-native-deck-swiper/-/react-native-deck-swiper-2.0.11.tgz#c7a564d72d5f5a28f268bb3cb0da7b8b4ecfb14f"
+  integrity sha512-qXxycuQO+Qn8Z301EGWdHsjYMRgXASAdjSAKTwExNds9T5BeYin1ApOHiWMhHRJr2nayzpWarsgYnQ33pwYYYg==
   dependencies:
     prop-types "15.5.10"
 
@@ -9527,24 +9532,18 @@ react-native-gradle-plugin@^0.0.7:
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.0.7.tgz#96602f909745239deab7b589443f14fce5da2056"
   integrity sha512-+4JpbIx42zGTONhBTIXSyfyHICHC29VTvhkkoUOJAh/XHPEixpuBduYgf6Y4y9wsN1ARlQhBBoptTvXvAFQf5g==
 
-react-native-iphone-x-helper@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.3.1.tgz#20c603e9a0e765fd6f97396638bdeb0e5a60b010"
-  integrity sha512-HOf0jzRnq2/aFUcdCJ9w9JGzN3gdEg0zFE4FyYlp4jtidqU03D5X7ZegGKfT1EWteR0gPBGp9ye5T5FvSWi9Yg==
-
 react-native-paper-tabs@0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/react-native-paper-tabs/-/react-native-paper-tabs-0.7.0.tgz#97ae5838f8a2d3ac2826cf1dee065364d7c3bad8"
   integrity sha512-TXz1G1hLJNvykJ57VhjKFVRgRDC2bxzb/bwPJ59POK9nGO0yD+Rx7+W5D0i5/ZQF1uKSV92IMv+eowd/BRM46Q==
 
-react-native-paper@5.0.0-rc.6:
-  version "5.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-5.0.0-rc.6.tgz#d0f050b04d137daae6e3d457634b26d8332ddaac"
-  integrity sha512-62SRf7vZdwTg/7JXXzcRtEwUyPUVtPu2XZNGVeJ0s96rjAud/V7Ixig7c3Za71fn7Qh/G60PBSq9Gnm0c7joSA==
+react-native-paper@5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-5.0.1.tgz#95d2e7ae647cbf306a404bf3783451319bc0e9bb"
+  integrity sha512-JY4XQktCCoDWLbZsNfUNsGSJ9Zf7HvpXfwif4aQT1igW+WTYWhWCQsAXsnisd5bMiw9uNwSQCbLkckvuI2fWBg==
   dependencies:
-    "@callstack/react-theme-provider" "^3.0.7"
+    "@callstack/react-theme-provider" "^3.0.8"
     color "^3.1.2"
-    react-native-iphone-x-helper "^1.3.1"
 
 react-native-safe-area-context@4.3.1:
   version "4.3.1"

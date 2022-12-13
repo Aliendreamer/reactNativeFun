@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useContext } from 'react';
 import { StyleSheet } from 'react-native';
-import { useTheme, Appbar, TouchableRipple, Switch } from 'react-native-paper';
+import { useTheme, Appbar, Switch } from 'react-native-paper';
 
 import { StorageKeys } from '../helpers/constants';
 import { UserContext } from '../contexts/usercontext';
@@ -25,15 +25,16 @@ export function CustomHeader({ navigation, back }) {
             }}
         >
             {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
-            <TouchableRipple
-                style={styles.toggleTheme}
-                onPress={() => toggleTheme()}
-            >
-                <Switch
-                    style={[{ backgroundColor: theme.colors.accent }]}
-                    value={isThemeDark}
-                />
-            </TouchableRipple>
+            <Switch
+                style={[
+                    {
+                        ...styles.toggleTheme,
+                        backgroundColor: theme.colors.accent,
+                    },
+                ]}
+                onValueChange={toggleTheme}
+                value={isThemeDark}
+            />
         </Appbar.Header>
     );
 }

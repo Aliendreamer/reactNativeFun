@@ -1,15 +1,8 @@
 // In App.js in a new project
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as SplashScreen from 'expo-splash-screen';
 import { isEmpty } from 'lodash';
-import React, {
-    useEffect,
-    useCallback,
-    useState,
-    useContext,
-    useRef,
-} from 'react';
+import React, { useEffect, useContext, useRef } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { TextInput, Text, Button, useTheme } from 'react-native-paper';
 
@@ -25,7 +18,6 @@ export function HomeScreen({ navigation }) {
     } = useContext(UserContext);
     const { setLanguages } = useContext(LanguageContext);
     const mount = useRef(true);
-    const [appIsReady, setAppIsReady] = useState(false);
     const theme = useTheme();
 
     useEffect(() => {
@@ -53,7 +45,6 @@ export function HomeScreen({ navigation }) {
                     usernames,
                     isThemeDark,
                 });
-                setAppIsReady(true);
             })();
             mount.current = false;
         }

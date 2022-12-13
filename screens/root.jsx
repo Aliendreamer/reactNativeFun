@@ -6,11 +6,11 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useContext } from 'react';
 import {
-    MD3DarkTheme as PaperDarkTheme,
-    DefaultTheme as PaperDefaultTheme,
+    MD2DarkTheme,
+    MD2LightTheme,
     Provider as PaperProvider,
 } from 'react-native-paper';
-
+import merge from 'deepmerge';
 import { CustomHeader } from '../components/header';
 import { Routes } from '../helpers/constants';
 import { UserContext } from '../contexts/usercontext';
@@ -21,22 +21,9 @@ import { CreateScreen } from './createScreen';
 import { ManageScreen } from './manageScreen';
 import { EditScreen } from './editScreen';
 
-const CombinedDefaultTheme = {
-    ...PaperDefaultTheme,
-    ...NavigationDefaultTheme,
-    colors: {
-        ...PaperDefaultTheme.colors,
-        ...NavigationDefaultTheme.colors,
-    },
-};
-const CombinedDarkTheme = {
-    ...PaperDarkTheme,
-    ...NavigationDarkTheme,
-    colors: {
-        ...PaperDarkTheme.colors,
-        ...NavigationDarkTheme.colors,
-    },
-};
+const CombinedDefaultTheme = merge(MD2DarkTheme, NavigationDefaultTheme);
+const CombinedDarkTheme = merge(MD2LightTheme, NavigationDarkTheme);
+
 const Stack = createNativeStackNavigator();
 
 export function Root() {

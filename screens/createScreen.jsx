@@ -67,9 +67,13 @@ export function CreateScreen({ navigation }) {
                 });
             }
             const listFile = `${dirUri + title}.json`;
-            await FileSystem.writeToFileAsync(listFile, JSON.stringify(data), {
-                encoding: 'utf8',
-            });
+            await FileSystem.writeAsStringAsync(
+                listFile,
+                JSON.stringify(data),
+                {
+                    encoding: 'utf8',
+                },
+            );
         } else {
             const existingLists = await getUserLanguageLists();
             existingLists[title] = data;
