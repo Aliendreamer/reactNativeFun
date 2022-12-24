@@ -44,6 +44,14 @@ const languageReducer = (state, action) => {
                 userLevels: action.payload,
             };
         }
+        case ReducerActions.EDIT_USER_LANGUAGE_LIST: {
+            const levels = { ...state.userLevels };
+            levels[action.payload.levelName] = action.payload.data;
+            return {
+                ...state,
+                userLevels: levels,
+            };
+        }
         default:
             return state;
     }
@@ -135,7 +143,11 @@ function LanguageProvider({ children }) {
             type: ReducerActions.UPDATE_USER_LANGUAGE_LISTS,
             payload: lists,
         });
-
+    const editUserLanguageList = data =>
+        dispatch({
+            type: ReducerActions.EDIT_USER_LANGUAGE_LIST,
+            payload: data,
+        });
     const contentValue = useMemo(() => {
         return {
             state,
@@ -144,6 +156,7 @@ function LanguageProvider({ children }) {
             setLanguageOptions,
             setUserWordsLists,
             setUserSymbolLists,
+            editUserLanguageList,
         };
     }, [state, setLanguages]);
     return (

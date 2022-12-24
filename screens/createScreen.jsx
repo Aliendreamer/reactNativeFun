@@ -6,15 +6,20 @@ import {
     Portal,
     Dialog,
 } from 'react-native-paper';
-import { Text, View, ScrollView, Platform, StyleSheet } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Text, StyleSheet, ScrollView } from 'react-native';
 import { isEmpty } from 'lodash';
 import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TableRowsRenderer from '../components/tableRow';
-import { Routes, StorageKeys } from '../helpers/constants';
-import { getUserLanguageLists } from '../helpers/reusable';
+import {
+    Routes,
+    StorageKeys,
+    isMobileDevice,
+    languageDirectory,
+} from '../helpers/constants';
+import { getUserLanguageLists, directoryExist } from '../helpers/reusable';
 import { LanguageContext } from '../contexts/languagecontext';
+import { EditCreateButtons } from '../components/edit_create_buttons';
 
 export function CreateScreen({ navigation }) {
     const [title, setListTitle] = useState('');
@@ -22,10 +27,10 @@ export function CreateScreen({ navigation }) {
     const [refresh, setRefresh] = useState(false);
     const [visible, setVisible] = useState(false);
     const { setUserSymbolLists } = useContext(LanguageContext);
-    const itemsPerPage = 10;
+    const itemsPerPage = 8;
 
     const itemValues = useRef(
-        Array(10)
+        Array(itemsPerPage)
             .fill(0)
             .map(() => ({
                 symbol: '',
@@ -57,16 +62,14 @@ export function CreateScreen({ navigation }) {
                     pronounce: value.pronounce,
                 };
             });
-        if (Platform.OS !== 'web') {
-            const fileDir = 'languageList/';
-            const dirUri = FileSystem.documentDirectory + fileDir;
-            const dirInfo = await FileSystem.getInfoAsync(dirUri);
-            if (!dirInfo.exists) {
-                await FileSystem.makeDirectoryAsync(dirUri, {
+        if (isMobileDevice) {
+            const exist = directoryExist();
+            if (!exist) {
+                await FileSystem.makeDirectoryAsync(languageDirectory, {
                     intermediates: true,
                 });
             }
-            const listFile = `${dirUri + title}.json`;
+            const listFile = `${languageDirectory + title}.json`;
             await FileSystem.writeAsStringAsync(
                 listFile,
                 JSON.stringify(data),
@@ -74,6 +77,9 @@ export function CreateScreen({ navigation }) {
                     encoding: 'utf8',
                 },
             );
+            const existingLists = await getUserLanguageLists();
+            existingLists[title] = data;
+            setUserSymbolLists(existingLists);
         } else {
             const existingLists = await getUserLanguageLists();
             existingLists[title] = data;
@@ -87,7 +93,7 @@ export function CreateScreen({ navigation }) {
     };
     const addRows = () => {
         itemValues.current.push(
-            ...Array(10)
+            ...Array(itemsPerPage)
                 .fill(0)
                 .map(() => ({
                     symbol: '',
@@ -103,7 +109,7 @@ export function CreateScreen({ navigation }) {
         }
     }, [page, refresh]);
     return (
-        <ScrollView horizontal={false}>
+        <ScrollView>
             <TextInput
                 value={title}
                 mode="outlined"
@@ -136,28 +142,29 @@ export function CreateScreen({ navigation }) {
                     </DataTable.Title>
                     <DataTable.Title style={styles.cell}>Hints</DataTable.Title>
                 </DataTable.Header>
-                {itemValues.current
-                    .slice(
-                        itemsPerPage * page,
-                        itemsPerPage * page + itemsPerPage,
-                    )
-                    .map((value, index) => (
-                        <TableRowsRenderer
-                            key={index}
-                            style={styles.cell}
-                            index={index}
-                            object={value}
-                            updateValue={updateValue}
-                        />
-                    ))}
+                {itemValues?.current &&
+                    itemValues?.current
+                        .slice(
+                            itemsPerPage * page,
+                            itemsPerPage * page + itemsPerPage,
+                        )
+                        .map((value, index) => (
+                            <TableRowsRenderer
+                                key={index}
+                                style={styles.cell}
+                                index={index}
+                                object={value}
+                                updateValue={updateValue}
+                            />
+                        ))}
                 <DataTable.Pagination
                     page={page}
                     numberOfPages={Math.abs(
-                        Math.ceil(itemValues.current.length / itemsPerPage),
+                        Math.round(itemValues.current.length / itemsPerPage),
                     )}
                     onPageChange={page => setPage(page)}
                     label={`page ${page + 1} of ${Math.abs(
-                        Math.ceil(itemValues.current.length / itemsPerPage),
+                        Math.round(itemValues.current.length / itemsPerPage),
                     )}`}
                     optionsPerPage={itemsPerPage}
                     itemsPerPage={itemsPerPage}
@@ -166,23 +173,11 @@ export function CreateScreen({ navigation }) {
                     optionsLabel="Rows per page"
                 />
             </DataTable>
-            <View style={styles.buttons}>
-                <Button mode="elevated" onPress={() => addRows()}>
-                    <Ionicons name="md-add" />
-                    <Text> Add rows</Text>
-                </Button>
-                <Button mode="elevated" onPress={() => saveList()}>
-                    <MaterialCommunityIcons name="content-save-all-outline" />
-                    <Text>Save list</Text>
-                </Button>
-                <Button
-                    mode="elevated"
-                    onPress={() => navigation.navigate(Routes.DETAILS)}
-                >
-                    <Ionicons name="backspace-outline" />
-                    <Text>Back to levels</Text>
-                </Button>
-            </View>
+            <EditCreateButtons
+                addRows={addRows}
+                saveList={saveList}
+                navigation={navigation}
+            />
         </ScrollView>
     );
 }
@@ -191,12 +186,6 @@ const styles = StyleSheet.create({
     cell: {
         width: '100%',
         padding: 0,
-    },
-    buttons: {
-        flex: 1,
-        marginHorizontal: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
     },
     text: {
         width: '100%',

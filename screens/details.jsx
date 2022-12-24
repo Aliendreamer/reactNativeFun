@@ -10,6 +10,7 @@ export function DetailScreen({ navigation }) {
         state: { languageOptions, userLevels },
         setLanguageOptions,
     } = useContext(LanguageContext);
+
     const [levels, setLevels] = useState([
         false,
         false,

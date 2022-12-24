@@ -1,10 +1,15 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useCallback, useContext } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { Button, Text } from 'react-native-paper';
+import * as FileSystem from 'expo-file-system';
 import { LanguageContext } from '../contexts/languagecontext';
-import { Routes, StorageKeys } from '../helpers/constants';
+import {
+    isMobileDevice,
+    languageDirectory,
+    StorageKeys,
+    Routes,
+} from '../helpers/constants';
 
 export function ManageScreen({ navigation }) {
     const {
@@ -14,6 +19,12 @@ export function ManageScreen({ navigation }) {
     const deleteList = useCallback(
         async key => {
             delete userLevels[key];
+            if (isMobileDevice) {
+                const file = `${languageDirectory}${key}.json`;
+                await FileSystem.deleteAsync(file, { idempotent: true });
+                setLanguageOptions(userLevels);
+                return;
+            }
             await AsyncStorage.removeItem(StorageKeys.USER_SYMBOL_LISTS);
             await AsyncStorage.setItem(
                 StorageKeys.USER_SYMBOL_LISTS,
@@ -33,35 +44,23 @@ export function ManageScreen({ navigation }) {
                         <Text variant="titleMedium">{key}</Text>
                         <Button
                             style={styles.button}
-                            compact
                             mode="contained-tonal"
+                            icon="circle-edit-outline"
                             onPress={() =>
                                 navigation.navigate(Routes.EDIT, {
                                     levelName: key,
                                 })
                             }
                         >
-                            <View style={styles.buttonView}>
-                                <MaterialIcons
-                                    name="mode-edit"
-                                    style={styles.buttonIcon}
-                                />
-                                <Text style={styles.buttonText}>Edit</Text>
-                            </View>
+                            <Text style={styles.buttonText}>Edit</Text>
                         </Button>
                         <Button
                             style={styles.button}
-                            compact
+                            icon="delete"
                             mode="contained-tonal"
                             onPress={() => deleteList(key)}
                         >
-                            <View style={styles.buttonView}>
-                                <MaterialIcons
-                                    name="delete"
-                                    style={styles.buttonIcon}
-                                />
-                                <Text style={styles.buttonText}>Delete</Text>
-                            </View>
+                            Delete
                         </Button>
                     </View>
                 ))}
@@ -88,32 +87,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
-    buttonIcon: {
-        fontSize: 20,
-    },
-    buttonView: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonText: {
-        fontSize: 20,
-        fontWeight: 'normal',
-    },
     button: {
         margin: 10,
-    },
-    clearButton: {
-        alignSelf: 'flex-end',
-        alignItems: 'center',
-        justifyContent: 'center',
-        maxWidth: 200,
-        width: 200,
-        margin: 10,
-    },
-    segmentedButton: {
-        justifyContent: 'center',
-        alignItems: 'stretch',
     },
 });

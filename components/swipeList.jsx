@@ -25,6 +25,7 @@ import { UserContext } from '../contexts/usercontext';
 
 export function SwipeList({ data }) {
     const swiperRef = useRef();
+    debugger;
     const {
         state: { user },
         setScores,
@@ -50,7 +51,7 @@ export function SwipeList({ data }) {
     const lastDirection = useRef(SwipeDirection.RIGHT);
     const [recordKnown, setRecordKnown] = useState(true);
     const [recordUnknown, setRecordUnknown] = useState(true);
-
+    debugger;
     const onSwipedLeft = index => {
         setCardIndex(index);
         setProgress(Math.abs(index / total).toPrecision(1));

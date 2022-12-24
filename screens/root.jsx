@@ -27,8 +27,8 @@ const { LightTheme, DarkTheme } = adaptNavigationTheme({
     reactNavigationLight: NavigationDefaultTheme,
     reactNavigationDark: NavigationDarkTheme,
 });
-const CombinedDefaultTheme = merge(MD3DarkTheme, DarkTheme);
-const CombinedDarkTheme = merge(MD3LightTheme, LightTheme);
+const CombinedDarkTheme = merge(MD3DarkTheme, DarkTheme);
+const CombinedDefaultTheme = merge(MD3LightTheme, LightTheme);
 const Stack = createStackNavigator();
 
 export function Root() {
@@ -63,7 +63,7 @@ export function Root() {
                         name={Routes.CREATE}
                         component={CreateScreen}
                         options={{
-                            headerShown: false,
+                            header: props => <CustomHeader {...props} />,
                         }}
                     />
                     <Stack.Screen

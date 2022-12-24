@@ -23,8 +23,8 @@ export function GameScreen({ route }) {
         },
         setCombination,
     } = useContext(LanguageContext);
+    // this use effect may not be needed
     useEffect(() => {
-        debugger;
         let index = 0;
         let dataLanguages = [];
         const combination = [];
@@ -33,7 +33,6 @@ export function GameScreen({ route }) {
             .map(key => userLevels[key]);
         for (const shouldAdd of levels) {
             if (shouldAdd) {
-                debugger;
                 switch (index) {
                     case 0:
                         dataLanguages = dataLanguages.concat(levelOne);
@@ -88,7 +87,19 @@ export function GameScreen({ route }) {
 
         setData(dataLanguages);
         setCombination(combination);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [
+        levelOne,
+        levelTwo,
+        levelThree,
+        levelFour,
+        levelFive,
+        levelSix,
+        userLevels,
+        languageOptions,
+        setCombination,
+        levels,
+        previouslyKnown,
+        previouslyUnknown,
+    ]);
     return <SwipeList data={data} />;
 }

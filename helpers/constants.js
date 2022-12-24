@@ -1,3 +1,6 @@
+import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
+
 export const ReducerActions = Object.freeze({
     INIT_USER: 'init_user',
     SET_SCORES: 'set_scores',
@@ -10,6 +13,7 @@ export const ReducerActions = Object.freeze({
     SET_LANGUAGE_OPTIONS: 'set_language_options',
     SET_USER_WORDS_LISTS: 'set_user_words_lists',
     UPDATE_USER_LANGUAGE_LISTS: 'update_user_language_lists',
+    EDIT_USER_LANGUAGE_LIST: 'edit_user_language_list',
 });
 
 export const StorageKeys = Object.freeze({
@@ -47,3 +51,10 @@ export const SymbolFields = Object.freeze({
     PRONOUNCE: 'pronounce',
     HINTS: 'hints',
 });
+
+export const FileLanguageDirectory = 'languageList/';
+
+export const languageDirectory =
+    FileSystem.documentDirectory + FileLanguageDirectory;
+
+export const isMobileDevice = Platform.OS !== 'web';

@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { DataTable, Button, TextInput } from 'react-native-paper';
-import { Text, View, ScrollView, Platform, StyleSheet } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { DataTable, TextInput } from 'react-native-paper';
+import { ScrollView, Platform, StyleSheet } from 'react-native';
 import { isEmpty } from 'lodash';
 import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TableRowsRenderer from '../components/tableRow';
-import { Routes, StorageKeys } from '../helpers/constants';
+import { Routes, StorageKeys, languageDirectory } from '../helpers/constants';
 import { getUserLanguageLists } from '../helpers/reusable';
 import { LanguageContext } from '../contexts/languagecontext';
+import { EditCreateButtons } from '../components/edit_create_buttons';
 
 export function EditScreen({ route, navigation }) {
     const [page, setPage] = useState(0);
@@ -18,6 +18,7 @@ export function EditScreen({ route, navigation }) {
     } = route;
     const {
         setUserSymbolLists,
+        editUserLanguageList,
         state: { userLevels },
     } = useContext(LanguageContext);
     const itemsPerPage = 10;
@@ -49,15 +50,8 @@ export function EditScreen({ route, navigation }) {
                 };
             });
         if (Platform.OS !== 'web') {
-            const fileDir = 'languageList/';
-            const dirUri = FileSystem.documentDirectory + fileDir;
-            const dirInfo = await FileSystem.getInfoAsync(dirUri);
-            if (!dirInfo.exists) {
-                await FileSystem.makeDirectoryAsync(dirUri, {
-                    intermediates: true,
-                });
-            }
-            const listFile = `${dirUri + levelName}.json`;
+            const listFile = `${languageDirectory}${levelName}.json`;
+            userLevels[levelName] = data;
             await FileSystem.writeAsStringAsync(
                 listFile,
                 JSON.stringify(data),
@@ -65,6 +59,7 @@ export function EditScreen({ route, navigation }) {
                     encoding: 'utf8',
                 },
             );
+            editUserLanguageList({ levelName, data });
         } else {
             const existingLists = await getUserLanguageLists();
             existingLists[levelName] = data;
@@ -142,23 +137,11 @@ export function EditScreen({ route, navigation }) {
                     optionsLabel="Rows per page"
                 />
             </DataTable>
-            <View style={styles.buttons}>
-                <Button mode="elevated" onPress={() => addRows()}>
-                    <Ionicons name="md-add" />
-                    <Text> Add rows</Text>
-                </Button>
-                <Button mode="elevated" onPress={() => saveList()}>
-                    <MaterialCommunityIcons name="content-save-all-outline" />
-                    <Text>Save list</Text>
-                </Button>
-                <Button
-                    mode="elevated"
-                    onPress={() => navigation.navigate(Routes.DETAILS)}
-                >
-                    <Ionicons name="backspace-outline" />
-                    <Text>Back to levels</Text>
-                </Button>
-            </View>
+            <EditCreateButtons
+                addRows={addRows}
+                saveList={saveList}
+                navigation={navigation}
+            />
         </ScrollView>
     );
 }
@@ -170,7 +153,6 @@ const styles = StyleSheet.create({
     },
     buttons: {
         flex: 1,
-        marginHorizontal: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
