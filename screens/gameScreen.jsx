@@ -24,6 +24,7 @@ export function GameScreen({ route }) {
         setCombination,
     } = useContext(LanguageContext);
     useEffect(() => {
+        debugger;
         let index = 0;
         let dataLanguages = [];
         const combination = [];
@@ -32,6 +33,7 @@ export function GameScreen({ route }) {
             .map(key => userLevels[key]);
         for (const shouldAdd of levels) {
             if (shouldAdd) {
+                debugger;
                 switch (index) {
                     case 0:
                         dataLanguages = dataLanguages.concat(levelOne);

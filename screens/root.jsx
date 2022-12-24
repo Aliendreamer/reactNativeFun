@@ -1,14 +1,16 @@
+import 'react-native-gesture-handler';
 import {
     NavigationContainer,
     DarkTheme as NavigationDarkTheme,
     DefaultTheme as NavigationDefaultTheme,
 } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import {
-    MD2DarkTheme,
-    MD2LightTheme,
+    MD3LightTheme,
+    MD3DarkTheme,
     Provider as PaperProvider,
+    adaptNavigationTheme,
 } from 'react-native-paper';
 import merge from 'deepmerge';
 import { CustomHeader } from '../components/header';
@@ -21,10 +23,13 @@ import { CreateScreen } from './createScreen';
 import { ManageScreen } from './manageScreen';
 import { EditScreen } from './editScreen';
 
-const CombinedDefaultTheme = merge(MD2DarkTheme, NavigationDefaultTheme);
-const CombinedDarkTheme = merge(MD2LightTheme, NavigationDarkTheme);
-
-const Stack = createNativeStackNavigator();
+const { LightTheme, DarkTheme } = adaptNavigationTheme({
+    reactNavigationLight: NavigationDefaultTheme,
+    reactNavigationDark: NavigationDarkTheme,
+});
+const CombinedDefaultTheme = merge(MD3DarkTheme, DarkTheme);
+const CombinedDarkTheme = merge(MD3LightTheme, LightTheme);
+const Stack = createStackNavigator();
 
 export function Root() {
     const {
