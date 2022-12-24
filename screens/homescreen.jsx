@@ -5,7 +5,6 @@ import { isEmpty } from 'lodash';
 import React, { useEffect, useContext, useRef } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { TextInput, Text, Button, useTheme } from 'react-native-paper';
-
 import { Routes, StorageKeys } from '../helpers/constants';
 import { LanguageContext } from '../contexts/languagecontext';
 import { UserContext } from '../contexts/usercontext';

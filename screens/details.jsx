@@ -1,13 +1,6 @@
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useState, useContext } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import {
-    Button,
-    Text,
-    SegmentedButtons,
-    Checkbox,
-    useTheme,
-} from 'react-native-paper';
+import { Button, Text, SegmentedButtons, Checkbox } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PlayOptions, Routes } from '../helpers/constants';
 import { LanguageContext } from '../contexts/languagecontext';
@@ -17,7 +10,6 @@ export function DetailScreen({ navigation }) {
         state: { languageOptions, userLevels },
         setLanguageOptions,
     } = useContext(LanguageContext);
-    const theme = useTheme();
     const [levels, setLevels] = useState([
         false,
         false,
@@ -31,55 +23,33 @@ export function DetailScreen({ navigation }) {
     ]);
     return (
         <SafeAreaView>
-            <ScrollView
-                style={{
-                    backgroundColor: theme.colors.background,
-                }}
-            >
+            <ScrollView>
                 <Text style={styles.text}> Choose language levels</Text>
                 <Button
                     style={styles.clearButton}
-                    compact
-                    mode="compact"
+                    icon="application-edit"
+                    mode="outlined"
                     onPress={() => navigation.navigate(Routes.MANAGE)}
                 >
-                    <View style={styles.buttonView}>
-                        <MaterialIcons
-                            style={styles.buttonIcon}
-                            name="create"
-                        />
-                        <Text style={styles.buttonText}>edit custom lists</Text>
-                    </View>
+                    <Text style={styles.buttonText}>edit custom lists</Text>
                 </Button>
                 <Button
                     style={styles.clearButton}
-                    compact
-                    mode="compact"
+                    icon="new-box"
+                    mode="outlined"
                     onPress={() => navigation.navigate(Routes.CREATE)}
                 >
-                    <View style={styles.buttonView}>
-                        <MaterialIcons
-                            style={styles.buttonIcon}
-                            name="create"
-                        />
-                        <Text style={styles.buttonText}>create new list</Text>
-                    </View>
+                    <Text style={styles.buttonText}>create new list</Text>
                 </Button>
                 <Button
                     style={styles.clearButton}
-                    compact
+                    icon="broom"
                     mode="outlined"
                     onPress={() =>
                         setLevels([false, false, false, false, false, false])
                     }
                 >
-                    <View style={styles.buttonView}>
-                        <MaterialCommunityIcons
-                            style={styles.buttonIcon}
-                            name="broom"
-                        />
-                        <Text style={styles.buttonText}>clear choices</Text>
-                    </View>
+                    <Text style={styles.buttonText}>clear choices</Text>
                 </Button>
                 <Checkbox.Item
                     label="HSK 1"
@@ -183,20 +153,14 @@ export function DetailScreen({ navigation }) {
                     />
                     <Button
                         style={styles.button}
-                        compact
+                        icon="restart"
                         mode="contained-tonal"
                         disabled={levels.every(level => level === false)}
                         onPress={() =>
                             navigation.navigate(Routes.GAME, { levels })
                         }
                     >
-                        <View style={styles.buttonView}>
-                            <MaterialIcons
-                                style={styles.buttonIcon}
-                                name="not-started"
-                            />
-                            <Text style={styles.buttonText}>start</Text>
-                        </View>
+                        <Text style={styles.buttonText}>start</Text>
                     </Button>
                 </View>
             </ScrollView>
@@ -211,7 +175,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     text: {
-        margin: 20,
+        margin: 0,
         fontSize: 30,
         fontStyle: 'italic',
         fontWeight: 'bold',
@@ -231,7 +195,7 @@ const styles = StyleSheet.create({
         fontWeight: 'normal',
     },
     button: {
-        margin: 10,
+        margin: 5,
     },
     clearButton: {
         alignSelf: 'flex-end',
@@ -239,7 +203,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         maxWidth: 200,
         width: 200,
-        margin: 10,
+        margin: 5,
     },
     segmentedButton: {
         justifyContent: 'center',
