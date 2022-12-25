@@ -17,7 +17,11 @@ import {
     isMobileDevice,
     languageDirectory,
 } from '../helpers/constants';
-import { getUserLanguageLists, directoryExist } from '../helpers/reusable';
+import {
+    getUserLanguageLists,
+    directoryExist,
+    writeFileToSystem,
+} from '../helpers/reusable';
 import { LanguageContext } from '../contexts/languagecontext';
 import { EditCreateButtons } from '../components/edit_create_buttons';
 
@@ -70,13 +74,7 @@ export function CreateScreen({ navigation }) {
                 });
             }
             const listFile = `${languageDirectory + title}.json`;
-            await FileSystem.writeAsStringAsync(
-                listFile,
-                JSON.stringify(data),
-                {
-                    encoding: 'utf8',
-                },
-            );
+            await writeFileToSystem(listFile, data);
             const existingLists = await getUserLanguageLists();
             existingLists[title] = data;
             setUserSymbolLists(existingLists);

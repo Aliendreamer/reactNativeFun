@@ -5,9 +5,16 @@ import { isEmpty } from 'lodash';
 import React, { useEffect, useContext, useRef } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { TextInput, Text, Button, useTheme } from 'react-native-paper';
-import { Routes, StorageKeys } from '../helpers/constants';
+import * as FileSystem from 'expo-file-system';
+import {
+    isMobileDevice,
+    Routes,
+    StorageKeys,
+    languageDirectory,
+} from '../helpers/constants';
 import { LanguageContext } from '../contexts/languagecontext';
 import { UserContext } from '../contexts/usercontext';
+import { writeFileToSystem } from '../helpers/reusable';
 
 export function HomeScreen({ navigation }) {
     const {
@@ -22,28 +29,67 @@ export function HomeScreen({ navigation }) {
     useEffect(() => {
         if (mount.current) {
             (async () => {
-                const user = await AsyncStorage.getItem(StorageKeys.USER);
-                const userScores = await AsyncStorage.getItem(
-                    StorageKeys.USERSCORES,
-                );
-                const userAvailableNames = await AsyncStorage.getItem(
-                    StorageKeys.USERNAMES,
-                );
-                const theme = await AsyncStorage.getItem(StorageKeys.APPTHEME);
-                const scores = isEmpty(userScores)
-                    ? []
-                    : JSON.parse(userScores);
-                const usernames = isEmpty(userAvailableNames)
-                    ? []
-                    : JSON.parse(userAvailableNames);
-                const isThemeDark = theme === 'true';
+                if (isMobileDevice) {
+                    const userInfoUri = `${languageDirectory}${StorageKeys.USER}.json`;
+                    const scoresInfoUri = `${languageDirectory}${StorageKeys.USERSCORES}.json`;
+
+                    const userInfo = await FileSystem.getInfoAsync(userInfoUri);
+                    const scoresInfo = await FileSystem.getInfoAsync(
+                        scoresInfoUri,
+                    );
+
+                    let user = '';
+                    let scores = [];
+                    let usernames = [];
+                    let isThemeDark = true;
+
+                    if (userInfo.exists) {
+                        const info = await FileSystem.readAsStringAsync(
+                            userInfoUri,
+                        );
+                        const parsedInfo = JSON.parse(info);
+                        user = parsedInfo?.user ?? '';
+                        isThemeDark = parsedInfo?.isThemeDark ?? true;
+                        usernames = parsedInfo?.usernames ?? [];
+                    }
+                    if (scoresInfo.exists) {
+                        const scoreInfo = await FileSystem.readAsStringAsync(
+                            scoresInfoUri,
+                        );
+                        scores = JSON.parse(scoreInfo) ?? [];
+                    }
+                    setLaunchState({
+                        user,
+                        scores,
+                        usernames,
+                        isThemeDark,
+                    });
+                } else {
+                    const user = await AsyncStorage.getItem(StorageKeys.USER);
+                    const userScores = await AsyncStorage.getItem(
+                        StorageKeys.USERSCORES,
+                    );
+                    const userAvailableNames = await AsyncStorage.getItem(
+                        StorageKeys.USERNAMES,
+                    );
+                    const theme = await AsyncStorage.getItem(
+                        StorageKeys.APPTHEME,
+                    );
+                    const scores = isEmpty(userScores)
+                        ? []
+                        : JSON.parse(userScores);
+                    const usernames = isEmpty(userAvailableNames)
+                        ? []
+                        : JSON.parse(userAvailableNames);
+                    const isThemeDark = theme === 'true';
+                    setLaunchState({
+                        user: user ?? '',
+                        scores,
+                        usernames,
+                        isThemeDark,
+                    });
+                }
                 await setLanguages();
-                setLaunchState({
-                    user: user ?? '',
-                    scores,
-                    usernames,
-                    isThemeDark,
-                });
             })();
             mount.current = false;
         }
@@ -67,7 +113,6 @@ export function HomeScreen({ navigation }) {
                 Create or choose a nickname
             </Text>
             <TextInput
-                autoFocus
                 left={<TextInput.Icon name="account" />}
                 placeholder="enter nickname"
                 value={user}
@@ -95,7 +140,6 @@ export function HomeScreen({ navigation }) {
                         style={styles.item}
                         onPress={async event => {
                             const userName = event.target.innerText;
-                            await AsyncStorage.setItem(StorageKeys.USER, user);
                             setUser(userName);
                         }}
                     >
@@ -110,20 +154,48 @@ export function HomeScreen({ navigation }) {
                 icon="door"
                 mode="contained"
                 onPress={async () => {
-                    navigation.navigate(Routes.DETAILS);
-                    await AsyncStorage.setItem(StorageKeys.USER, user);
-                    const names = await AsyncStorage.getItem(
-                        StorageKeys.USERNAMES,
-                    );
-                    const nameList = isEmpty(names) ? [] : JSON.parse(names);
-                    const shouldAdd = nameList.includes(user);
-                    if (shouldAdd) {
-                        nameList.push(user);
-                        await AsyncStorage.setItem(
-                            StorageKeys.USERNAMES,
-                            JSON.stringify(nameList),
+                    if (isMobileDevice) {
+                        const userInfoUri = `${languageDirectory}${StorageKeys.USER}.json`;
+                        const userInfo = await FileSystem.getInfoAsync(
+                            userInfoUri,
                         );
+                        if (userInfo.exists) {
+                            const info = await FileSystem.readAsStringAsync(
+                                userInfoUri,
+                            );
+                            const parsedInfo = JSON.parse(info);
+                            parsedInfo.user = user;
+                            parsedInfo.usernames =
+                                parsedInfo.usernames.includes(user)
+                                    ? parsedInfo.usernames
+                                    : parsedInfo.usernames.push(user);
+                            writeFileToSystem(userInfoUri, parsedInfo);
+                        } else {
+                            const object = {
+                                user,
+                                usernames: [user],
+                                isThemeDark: true,
+                            };
+                            writeFileToSystem(userInfoUri, object);
+                        }
+                    } else {
+                        await AsyncStorage.setItem(StorageKeys.USER, user);
+                        const names = await AsyncStorage.getItem(
+                            StorageKeys.USERNAMES,
+                        );
+                        const nameList = isEmpty(names)
+                            ? []
+                            : JSON.parse(names);
+                        const shouldAdd = nameList.includes(user);
+                        if (shouldAdd) {
+                            nameList.push(user);
+                            await AsyncStorage.setItem(
+                                StorageKeys.USERNAMES,
+                                JSON.stringify(nameList),
+                            );
+                        }
                     }
+                    navigation.navigate(Routes.DETAILS);
                 }}
             >
                 <Text style={styles.buttonText}>
@@ -133,7 +205,9 @@ export function HomeScreen({ navigation }) {
             <View style={styles.score}>
                 {scores.length !== 0 && <Text>Top Scores</Text>}
                 {scores.slice(0, 3).map((userScore, index) => (
-                    <Text key={index}>{userScore.score}</Text>
+                    <Text
+                        key={index}
+                    >{`${userScore.user} - ${userScore.score}`}</Text>
                 ))}
             </View>
         </View>

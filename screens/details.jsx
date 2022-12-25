@@ -9,6 +9,7 @@ export function DetailScreen({ navigation }) {
     const {
         state: { languageOptions, userLevels },
         setLanguageOptions,
+        setCombination,
     } = useContext(LanguageContext);
 
     const [levels, setLevels] = useState([
@@ -157,9 +158,10 @@ export function DetailScreen({ navigation }) {
                         icon="restart"
                         mode="contained-tonal"
                         disabled={levels.every(level => level === false)}
-                        onPress={() =>
-                            navigation.navigate(Routes.GAME, { levels })
-                        }
+                        onPress={() => {
+                            setCombination(levels);
+                            navigation.navigate(Routes.GAME, { levels });
+                        }}
                     >
                         <Text style={styles.buttonText}>start</Text>
                     </Button>

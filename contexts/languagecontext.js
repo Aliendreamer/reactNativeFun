@@ -22,11 +22,91 @@ const languageReducer = (state, action) => {
                 ...state,
                 ...action.payload,
             };
-        case ReducerActions.SET_LANGUAGE_COMBINATION:
+        case ReducerActions.SET_LANGUAGE_COMBINATION: {
+            const levels = action.payload;
+            let index = 0;
+            let dataLanguages = [];
+            const combination = [];
+            const userLists = Object.keys(state.userLevels)
+                .sort()
+                .map(key => state.userLevels[key]);
+            for (const shouldAdd of levels) {
+                if (shouldAdd) {
+                    switch (index) {
+                        case 0:
+                            dataLanguages = dataLanguages.concat(
+                                state.levelOne,
+                            );
+                            combination.push(index + 1);
+                            break;
+                        case 1:
+                            dataLanguages = dataLanguages.concat(
+                                state.levelTwo,
+                            );
+                            combination.push(index + 1);
+                            break;
+                        case 2:
+                            dataLanguages = dataLanguages.concat(
+                                state.levelThree,
+                            );
+                            combination.push(index + 1);
+                            break;
+                        case 3:
+                            dataLanguages = dataLanguages.concat(
+                                state.levelFour,
+                            );
+                            combination.push(index + 1);
+                            break;
+                        case 4:
+                            dataLanguages = dataLanguages.concat(
+                                state.levelFive,
+                            );
+                            combination.push(index + 1);
+                            break;
+                        case 5:
+                            dataLanguages = dataLanguages.concat(
+                                state.levelSix,
+                            );
+                            combination.push(index + 1);
+                            break;
+                        default: {
+                            const num = index - 6;
+                            const newLevel = userLists[num];
+                            dataLanguages = dataLanguages.concat(newLevel);
+                            combination.push(index + 1);
+                            break;
+                        }
+                    }
+                }
+                index += 1;
+            }
+            switch (state.languageOptions) {
+                case PlayOptions.PlayKnown:
+                    dataLanguages = dataLanguages.filter(word =>
+                        state.previouslyKnown.some(
+                            known => known === word.symbol,
+                        ),
+                    );
+                    break;
+                case PlayOptions.PlayUnknown:
+                    dataLanguages = dataLanguages.filter(word =>
+                        state.previouslyUnknown.some(
+                            known => known === word.symbol,
+                        ),
+                    );
+                    break;
+                case PlayOptions.PlayAll:
+                default:
+                    break;
+            }
+            const playData = dataLanguages.slice(0, 5).filter(Boolean);
+            // debugger;
             return {
                 ...state,
-                languageLevel: action.payload,
+                currentCombination: combination,
+                playSymbols: playData,
             };
+        }
         case ReducerActions.SET_LANGUAGE_OPTIONS:
             return {
                 ...state,
@@ -66,6 +146,7 @@ function LanguageProvider({ children }) {
         levelFive: [],
         levelSix: [],
         userLevels: {},
+        playSymbols: [],
         currentCombination: [],
         languageOptions: PlayOptions.PlayAll,
         previouslyKnown: [],

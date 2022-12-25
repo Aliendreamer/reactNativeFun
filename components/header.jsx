@@ -2,8 +2,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useContext } from 'react';
 import { StyleSheet } from 'react-native';
 import { useTheme, Appbar, Switch } from 'react-native-paper';
-
-import { StorageKeys } from '../helpers/constants';
+import * as FileSystem from 'expo-file-system';
+import { writeFileToSystem } from '../helpers/reusable';
+import {
+    isMobileDevice,
+    StorageKeys,
+    languageDirectory,
+} from '../helpers/constants';
 import { UserContext } from '../contexts/usercontext';
 
 export function CustomHeader({ navigation, back }) {
@@ -14,7 +19,16 @@ export function CustomHeader({ navigation, back }) {
     } = useContext(UserContext);
     const toggleTheme = async () => {
         setThemeState(!isThemeDark);
-        await AsyncStorage.setItem(StorageKeys.APPTHEME, `${!isThemeDark}`);
+        if (isMobileDevice) {
+            const userInfoUri = `${languageDirectory}${StorageKeys.USER}.json`;
+            const info = await FileSystem.readAsStringAsync(userInfoUri);
+            const parsedInfo = JSON.parse(info);
+            parsedInfo.isThemeDark = !isThemeDark;
+
+            writeFileToSystem(userInfoUri, parsedInfo);
+        } else {
+            await AsyncStorage.setItem(StorageKeys.APPTHEME, `${!isThemeDark}`);
+        }
     };
     return (
         <Appbar.Header

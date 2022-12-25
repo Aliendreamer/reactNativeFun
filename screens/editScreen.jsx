@@ -2,11 +2,10 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import { DataTable, TextInput } from 'react-native-paper';
 import { ScrollView, Platform, StyleSheet } from 'react-native';
 import { isEmpty } from 'lodash';
-import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TableRowsRenderer from '../components/tableRow';
 import { Routes, StorageKeys, languageDirectory } from '../helpers/constants';
-import { getUserLanguageLists } from '../helpers/reusable';
+import { getUserLanguageLists, writeFileToSystem } from '../helpers/reusable';
 import { LanguageContext } from '../contexts/languagecontext';
 import { EditCreateButtons } from '../components/edit_create_buttons';
 
@@ -52,13 +51,7 @@ export function EditScreen({ route, navigation }) {
         if (Platform.OS !== 'web') {
             const listFile = `${languageDirectory}${levelName}.json`;
             userLevels[levelName] = data;
-            await FileSystem.writeAsStringAsync(
-                listFile,
-                JSON.stringify(data),
-                {
-                    encoding: 'utf8',
-                },
-            );
+            await writeFileToSystem(listFile, data);
             editUserLanguageList({ levelName, data });
         } else {
             const existingLists = await getUserLanguageLists();
